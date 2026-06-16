@@ -1,6 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Termes from "./Termes"
 import Concepts from "./Concepts"
+import Thesaurus from "./Thesaurus"
+import Alignements from "./Alignements"
+
+
 
 function App() {
   return (
@@ -8,6 +12,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Termes />} />
         <Route path="/concepts" element={<Concepts />} />
+        <Route path="/thesaurus" element={<Thesaurus />} />
+        <Route path="/alignements" element={<Alignements/>}/>
       </Routes>
     </BrowserRouter>
   )

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import "./Concepts.css"
+import { Link, useNavigate } from "react-router-dom"
+import "./termes.css"
 
 function Concepts() {
 
@@ -13,6 +13,7 @@ function Concepts() {
   const [validatedBy, setValidatedBy] = useState("")
   const [editId, setEditId] = useState(null)
   const [editConcept, setEditConcept] = useState({})
+  const navigate = useNavigate()
   
 
 
@@ -132,8 +133,8 @@ const termesFiltered = termes.filter(t =>
         <div className="d-flex gap-2">
           <Link to="/"><span className="step">Termes</span></Link>
           <Link to="/concepts"><span className="step active">Concepts</span></Link>
-          <span className="step">Thésaurus</span>
-          <span className="step">Alignements</span>
+          <Link to="/thesaurus"><span className="step">Thésaurus</span></Link>
+          <Link to="/alignements"><span className="step">Alignements</span></Link>
           <span className="step">Export</span>
         </div>
       </nav>
@@ -189,7 +190,12 @@ const termesFiltered = termes.filter(t =>
         <select
             className="form-control mb-3"
             value={selectedTerme ? selectedTerme.id : ""}
-            onChange={e => setSelectedTerme(termes.find(t => t.id === e.target.value))}
+            onChange={e => {
+              setSelectedTerme(termes.find(t => t.id === e.target.value))
+              setConcept(null)
+              setEditId(null)
+              setEditConcept({})
+            }}
             >
             <option value="">-- Choisir un terme --</option>
             {termesFiltered.map(t => (
@@ -313,7 +319,7 @@ const termesFiltered = termes.filter(t =>
         <button className="btn btn-accent" onClick={deleteAllConcepts}>
             🗑 Supprimer tout
         </button>
-          <button className="btn btn-accent">
+          <button className="btn btn-accent" onClick={() => navigate("/thesaurus")}>
             Passer au thésaurus →
           </button>
 

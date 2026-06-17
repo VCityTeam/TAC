@@ -117,9 +117,9 @@ return (
       <span className="nav-logo">TAC — Thésaurus Automatisé par Curation</span>
       <div className="d-flex gap-2">
         <Link to="/"><span className="step active">Termes</span></Link>
-        <Link to="/concepts"><span className="step">Concepts</span></Link>
-        <span className="step">Thésaurus</span>
-        <span className="step">Alignements</span>
+          <Link to="/concepts"><span className="step">Concepts</span></Link>
+          <Link to="/thesaurus"><span className="step">Thésaurus</span></Link>
+          <Link to="/alignements"><span className="step">Alignements</span></Link>
         <span className="step">Export</span>
       </div>
     </nav>

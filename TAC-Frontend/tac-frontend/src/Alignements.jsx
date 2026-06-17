@@ -20,13 +20,14 @@ function Alignements() {
   useEffect(() => {
     fetch("http://localhost:8002/thesaurus")
       .then(res => res.json())
-      .then(data => setThesauriTac(data.thesauri.filter(t => t.statut === "validé")))
+      .then(data => setThesauriTac(data["thesauri"].filter(t => t.statut === "validé")))
   }, [])
 
   useEffect(() => {
-    fetch("http://localhost:8003/alignements/arango/thesauri")
+    fetch("http://localhost:8004/alignements/arango/thesauri")
       .then(res => res.json())
-      .then(data => setThesauriArango(data.thesauri))
+      .then(data => setThesauriArango(data["thesauri"] || []))
+      .catch(err => console.error("Erreur ArangoDB:", err))
   }, [])
 
 
@@ -97,7 +98,7 @@ function Alignements() {
       .then(() => setAlignements(alignements.filter(a => a.id !== id)))
   }
 
-  
+
   function deleteAll() {
     if (!window.confirm("Supprimer tous les alignements ?")) return
     fetch("http://localhost:8003/alignements", { method: "DELETE" })
@@ -141,6 +142,7 @@ function Alignements() {
           </div>
           <div className="col-4">
             <div className="stat-card">
+
               <div className="stat-label">Rejetés</div>
               <div className="stat-value" style={{color: "#c0392b"}}>
                 {alignements.filter(a => a.statut === "rejeté").length}
@@ -169,11 +171,10 @@ function Alignements() {
               <label className="form-label fw-500">Thésaurus externe (ArangoDB)</label>
               <select
                 className="form-control"
-                onChange={e => setSelectedArango(e.target.value)}
-              >
+                onChange={e => setSelectedArango(e.target.value)}>
                 <option value="">-- Choisir un thésaurus externe --</option>
                 {thesauriArango.map((t, i) => (
-                  <option key={i} value={t.nom}>{t.nom}</option>
+                  <option key={i} value={t['title']}>{t['title']}</option>
                 ))}
               </select>
             </div>

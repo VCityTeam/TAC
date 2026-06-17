@@ -4,17 +4,19 @@ import uuid
 import json
 import re
 import requests
+import base64
 from datetime import datetime
 from typing import Optional, List
-
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-
-from DataBase import get_session
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from arango import ArangoClient
+import certifi
+os.environ['SSL_CERT_FILE'] = certifi.where()
+os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
+
 from dotenv import load_dotenv
+from google import genai
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -30,7 +32,7 @@ app.add_middleware(
 
 def get_arango_db():
     client = ArangoClient(hosts="http://localhost:8529")
-    db = client.db("thesaurus_ref", username="rasri", password="")
+    db = client.db("as", username="rasri", password="")
     return db
 
 
@@ -53,20 +55,33 @@ class AlignementUpdate(BaseModel):
 
 
 def call_gemini(prompt: str) -> str:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-    response = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]})
-    result = response.json()
-    return result["candidates"][0]["content"]["parts"][0]["text"]
+    client = genai.Client(api_key=GEMINI_API_KEY)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt
+    )
+    return response.text
 
 
 @app.get("/alignements/arango/thesauri")
 def get_arango_thesauri():
     db = get_arango_db()
-    collection = db.collection("thesaurus_ref")
-    thesauri = [doc for doc in collection.all()]
-    return {"thesauri": thesauri}
-
-
+    thesauri = list(db.aql.execute("FOR theso IN thesaurus RETURN theso"))
+    
+    # Nettoyer les champs ArangoDB non sérialisables
+    clean = []
+    for t in thesauri:
+        clean.append({
+            "key": t.get("_key"),
+            "title": t.get("title"),
+            "description": t.get("description"),
+            "language": t.get("language"),
+            "creator": t.get("creator"),
+            "concepts": t.get("concepts", [])
+        })
+    
+    return {"thesauri": clean}
+  
 @app.get("/alignements/generate")
 def generate_alignements(thesaurus_tac_id: str, thesaurus_arango_nom: str):
 
@@ -82,18 +97,15 @@ def generate_alignements(thesaurus_tac_id: str, thesaurus_arango_nom: str):
     if not concepts_tac:
         raise HTTPException(status_code=404, detail="Aucun concept trouvé")
 
-    
     db = get_arango_db()
-    collection = db.collection("thesaurus_ref")
-    cursor = collection.find({"nom": thesaurus_arango_nom})
-    thesaurus_arango = next(cursor, None)
+    results = list(db.aql.execute(f"FOR doc IN thesaurus FILTER doc.title == '{thesaurus_arango_nom}' RETURN doc"))
+    thesaurus_arango = results[0] if results else None
 
     if not thesaurus_arango:
         raise HTTPException(status_code=404, detail="Thésaurus ArangoDB non trouvé")
 
     concepts_arango = thesaurus_arango.get("concepts", [])
 
-    # Prompt Gemini
     tac_text = "\n".join([
         f"- ID:{c['id']} | {c['prefLabel']} | altLabel: {c['altLabel']} | broader: {c['broader']}"
         for c in concepts_tac
@@ -118,6 +130,7 @@ def generate_alignements(thesaurus_tac_id: str, thesaurus_arango_nom: str):
             - closeMatch : concepts très similaires
 
             Réponds UNIQUEMENT en JSON sans texte avant ou après :
+
             [
             {{
                 "concept_tac_id": "id du concept TAC",
@@ -251,6 +264,7 @@ def get_alignements():
 def update_alignement(id: str, data: AlignementUpdate):
     with get_session() as session:
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
+
         session.run("""
             MATCH (a:Alignement {id: $id})
             SET a.type_alignement = $type_alignement,

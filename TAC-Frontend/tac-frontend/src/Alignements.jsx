@@ -32,9 +32,9 @@ function Alignements() {
 
 
   useEffect(() => {
-    fetch("http://localhost:8003/alignements")
+    fetch("http://localhost:8004/alignements")
       .then(res => res.json())
-      .then(data => setAlignements(data.alignements))
+      .then(data => setAlignements(data.alignements || []))
   }, [refresh])
 
 
@@ -42,18 +42,22 @@ function Alignements() {
     if (!selectedTac || !selectedArango) return
     setLoading(true)
     setAlignementsGeneres([])
-    fetch(`http://localhost:8003/alignements/generate?thesaurus_tac_id=${selectedTac.id}&thesaurus_arango_nom=${encodeURIComponent(selectedArango)}`)
+    fetch(`http://localhost:8004/alignements/generate?thesaurus_tac_id=${selectedTac.id}&thesaurus_arango_nom=${encodeURIComponent(selectedArango)}`)
       .then(res => res.json())
       .then(data => {
-        setAlignementsGeneres(data.alignements)
+        setAlignementsGeneres(data.alignements || [])
         setLoading(false)
+      })
+      .catch(err => {
+         console.error("Erreur generation :", err)
+         setLoading(false)
       })
   }
 
 
   function validateAlignement(a) {
     if (!validatedBy) return
-    fetch("http://localhost:8003/alignements/validate", {
+    fetch("http://localhost:8004/alignements/validate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...a, validated_by: validatedBy, statut: "validé" })
@@ -66,7 +70,7 @@ function Alignements() {
 
 
   function rejectAlignement(a) {
-    fetch("http://localhost:8003/alignements/reject", {
+    fetch("http://localhost:8004/alignements/reject", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...a, validated_by: validatedBy || "—", statut: "rejeté" })
@@ -79,7 +83,7 @@ function Alignements() {
 
 
   function updateAlignement(id) {
-    fetch(`http://localhost:8003/alignements/${id}`, {
+    fetch(`http://localhost:8004/alignements/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editData)
@@ -94,14 +98,14 @@ function Alignements() {
  
   function deleteAlignement(id) {
     if (!window.confirm("Supprimer cet alignement ?")) return
-    fetch(`http://localhost:8003/alignements/${id}`, { method: "DELETE" })
+    fetch(`http://localhost:8004/alignements/${id}`, { method: "DELETE" })
       .then(() => setAlignements(alignements.filter(a => a.id !== id)))
   }
 
 
   function deleteAll() {
     if (!window.confirm("Supprimer tous les alignements ?")) return
-    fetch("http://localhost:8003/alignements", { method: "DELETE" })
+    fetch("http://localhost:8004/alignements", { method: "DELETE" })
       .then(() => setAlignements([]))
   }
 
@@ -114,7 +118,7 @@ function Alignements() {
           <Link to="/concepts"><span className="step">Concepts</span></Link>
           <Link to="/thesaurus"><span className="step">Thésaurus</span></Link>
           <Link to="/alignements"><span className="step active">Alignements</span></Link>
-          <span className="step">Export</span>
+          <Link to="/export"><span className="step">Export</span></Link>
         </div>
       </nav>
 
@@ -203,30 +207,28 @@ function Alignements() {
               <table className="table table-hover align-middle mb-0">
                 <thead>
                   <tr>
-                    <th>Concept TAC</th>
-                    <th>Type</th>
+                    <th>Thésaurus </th>
+                    <th>Concept</th>
+                    <th>Type d'alignement</th>
+                    <th>Thésaurus externe</th>
                     <th>Concept externe</th>
-                    <th>URI</th>
-                    <th>Source</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alignementsGeneres.map((a, i) => (
                     <tr key={i}>
+                      <td>{a.thesaurus_tac_nom}</td>
                       <td className="fw-500">{a.concept_tac_label}</td>
                       <td>
-                        <span className={a.type_alignement === "exactMatch" ? "badge-ok" : "badge-pend"}>
+                        <span className={a.type_alignement === "exactMatch" ? "badge-ok" : a.type_alignement === "noMatch" ? "badge-src" : "badge-pend"}>
                           {a.type_alignement}
                         </span>
                       </td>
+                      <td>{a.thesaurus_arango_nom}</td>
                       <td>{a.concept_externe_label}</td>
-                      <td className="id-cell">
-                        <a href={a.uri_externe} target="_blank" rel="noreferrer">{a.uri_externe}</a>
-                      </td>
-                      <td>{a.source_externe}</td>
                       <td>
-                        <button className="btn btn-accent btn-sm me-1" onClick={() => validateAlignement(a)} disabled={!validatedBy}>
+                        <button className="btn btn-accent btn-sm me-1" onClick={() => validateAlignement(a)} disabled={!validatedBy || a.type_alignement === "noMatch"}>
                           ✅ Valider
                         </button>
                         <button className="btn btn-delete-sm" onClick={() => rejectAlignement(a)}>
@@ -248,13 +250,11 @@ function Alignements() {
             <table className="table table-hover align-middle mb-0">
               <thead>
                 <tr>
-                  <th>Thésaurus TAC</th>
-                  <th>Concept TAC</th>
-                  <th>Type</th>
+                  <th>Thésaurus </th>
+                  <th>Concept </th>
+                  <th>Type d'alignement</th>
                   <th>Thésaurus externe</th>
                   <th>Concept externe</th>
-                  <th>URI</th>
-                  <th>Source</th>
                   <th>Statut</th>
                   <th>Validé par</th>
                   <th>Date</th>
@@ -271,23 +271,16 @@ function Alignements() {
                         <select className="form-control" value={editData.type_alignement} onChange={e => setEditData({...editData, type_alignement: e.target.value})}>
                           <option value="exactMatch">exactMatch</option>
                           <option value="closeMatch">closeMatch</option>
+                          <option value="noMatch">noMatch</option>
                         </select>
                       ) : (
-                        <span className={a.type_alignement === "exactMatch" ? "badge-ok" : "badge-pend"}>
+                        <span className={a.type_alignement === "exactMatch" ? "badge-ok" : a.type_alignement === "noMatch" ? "badge-src" : "badge-pend"}>
                           {a.type_alignement}
                         </span>
                       )}
                     </td>
                     <td>{a.thesaurus_arango_nom}</td>
                     <td>{a.concept_externe_label}</td>
-                    <td className="id-cell">
-                      {editId === a.id ? (
-                        <input className="form-control" value={editData.uri_externe} onChange={e => setEditData({...editData, uri_externe: e.target.value})} />
-                      ) : (
-                        <a href={a.uri_externe} target="_blank" rel="noreferrer">{a.uri_externe}</a>
-                      )}
-                    </td>
-                    <td>{a.source_externe}</td>
                     <td>
                       <span className={a.statut === "validé" ? "badge-ok" : "badge-pend"}>
                         {a.statut}

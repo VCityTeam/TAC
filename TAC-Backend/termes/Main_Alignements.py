@@ -1,5 +1,7 @@
 import sys
 import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+from DataBase import get_session
 import uuid
 import json
 import re
@@ -19,6 +21,7 @@ from dotenv import load_dotenv
 from google import genai
 
 load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 app = FastAPI()
@@ -26,6 +29,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:5174"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -44,7 +48,7 @@ class Alignement(BaseModel):
     type_alignement: str
     thesaurus_arango_nom: str
     concept_externe_label: str
-    uri_externe: str
+    uri_externe: Optional[str] = ""
     source_externe: str
     validated_by: str
     statut: str
@@ -57,7 +61,7 @@ class AlignementUpdate(BaseModel):
 def call_gemini(prompt: str) -> str:
     client = genai.Client(api_key=GEMINI_API_KEY)
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents=prompt
     )
     return response.text
@@ -105,45 +109,59 @@ def generate_alignements(thesaurus_tac_id: str, thesaurus_arango_nom: str):
         raise HTTPException(status_code=404, detail="Thésaurus ArangoDB non trouvé")
 
     concepts_arango = thesaurus_arango.get("concepts", [])
+    print(f"=== concepts TAC: {len(concepts_tac)} | concepts Arango: {len(concepts_arango)} ===")
 
-    tac_text = "\n".join([
-        f"- ID:{c['id']} | {c['prefLabel']} | altLabel: {c['altLabel']} | broader: {c['broader']}"
+    tac_text = "\n".join([ f"- ID:{c['id']} | {c['prefLabel']} | altLabel: {c['altLabel']} | broader: {c['broader']}"
         for c in concepts_tac
     ])
 
-    arango_text = "\n".join([
-        f"- {c['prefLabel']} | URI: {c['uri']}"
+    arango_text = "\n".join([f"- {c['prefLabel']}"
         for c in concepts_arango
     ])
 
+    print("=== TAC text ===", tac_text)
+    print("=== Arango text ===", arango_text)
+
     prompt = f"""Tu es un expert en alignement de thésaurus SKOS.
 
-            Concepts du thésaurus TAC :
-            {tac_text}
+        Concepts du thésaurus TAC :
+        {tac_text}
 
-            Concepts du thésaurus externe ({thesaurus_arango_nom}) :
-            {arango_text}
+        Concepts du thésaurus externe ({thesaurus_arango_nom}) :
+        {arango_text}
 
-            Pour chaque concept TAC, trouve le concept externe le plus similaire.
-            Type d'alignement :
-            - exactMatch : concepts identiques
-            - closeMatch : concepts très similaires
+        Pour chaque concept TAC, trouve le concept externe le plus similaire sémantiquement.
+        Le concept TAC "peinture" peut s'aligner avec "Fresque" ou "Tempera" car ce sont des techniques de peinture.
 
-            Réponds UNIQUEMENT en JSON sans texte avant ou après :
+        Types d'alignement :
+        - exactMatch : concepts identiques ou quasi-identiques
+        - closeMatch : concepts très similaires ou du même domaine
+        - noMatch : aucun concept externe ne correspond sémantiquement (domaines différents)
 
-            [
-            {{
-                "concept_tac_id": "id du concept TAC",
-                "concept_tac_label": "label TAC",
-                "type_alignement": "exactMatch ou closeMatch",
-                "concept_externe_label": "label externe",
-                "uri_externe": "uri du concept externe"
-            }}
-            ]
+        IMPORTANT : Tu DOIS toujours retourner exactement une entrée par concept TAC, même s'il n'y a aucune correspondance.
+        Dans ce cas, utilise "type_alignement": "noMatch" et laisse "concept_externe_label" vide "".
+        Si l'URI est vide, mets une chaîne vide "".
 
-            Si aucun alignement trouvé pour un concept, ne l'inclus pas."""
+        Réponds UNIQUEMENT avec ce JSON, sans texte avant ou après, sans markdown :
 
-    raw = call_gemini(prompt)
+        [
+        {{
+            "concept_tac_id": "id du concept TAC",
+            "concept_tac_label": "label TAC",
+            "type_alignement": "exactMatch, closeMatch ou noMatch",
+            "concept_externe_label": "label externe",
+
+        }}
+        ]"""
+
+    try:
+        raw = call_gemini(prompt)
+    except genai.errors.APIError as e:
+        if e.code == 429:
+            raise HTTPException(status_code=429, detail="Quota Gemini dépassé, réessaie dans quelques instants.")
+        if e.code == 503:
+            raise HTTPException(status_code=503, detail="Gemini est surchargé en ce moment, réessaie dans quelques instants.")
+        raise HTTPException(status_code=502, detail=f"Erreur Gemini : {e}")
     print("=== Gemini response ===", raw)
 
     match = re.search(r'\[.*\]', raw, re.DOTALL)
@@ -156,7 +174,9 @@ def generate_alignements(thesaurus_tac_id: str, thesaurus_arango_nom: str):
         a["thesaurus_tac_id"] = thesaurus_tac_id
         a["thesaurus_tac_nom"] = concepts_tac[0]["thesaurus_nom"]
         a["thesaurus_arango_nom"] = thesaurus_arango_nom
-        a["source_externe"] = thesaurus_arango["source"]
+        a["source_externe"] = thesaurus_arango.get("source", thesaurus_arango_nom)
+        if a.get("type_alignement") == "noMatch":
+            a["concept_externe_label"] = "Not found"
 
     return {"alignements": alignements}
 

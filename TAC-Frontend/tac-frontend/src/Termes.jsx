@@ -120,7 +120,7 @@ return (
           <Link to="/concepts"><span className="step">Concepts</span></Link>
           <Link to="/thesaurus"><span className="step">Thésaurus</span></Link>
           <Link to="/alignements"><span className="step">Alignements</span></Link>
-        <span className="step">Export</span>
+          <Link to="/export"><span className="step">Export</span></Link>
       </div>
     </nav>
 

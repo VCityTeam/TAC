@@ -3,6 +3,7 @@ import Termes from "./Termes"
 import Concepts from "./Concepts"
 import Thesaurus from "./Thesaurus"
 import Alignements from "./Alignements"
+import Export from "./Export"
 
 
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/concepts" element={<Concepts />} />
         <Route path="/thesaurus" element={<Thesaurus />} />
         <Route path="/alignements" element={<Alignements/>}/>
+        <Route path="/export" element={<Export/>}/>
       </Routes>
     </BrowserRouter>
   )

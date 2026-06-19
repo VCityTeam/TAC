@@ -47,7 +47,7 @@ function Concepts() {
 
   function togglePromptEditor() {
     if (!showPrompt && !defaultPromptText) {
-      fetch("http://localhost:8001/concepts/prompt")
+      fetch("http://localhost:8008/concepts/prompt")
         .then(res => res.json())
         .then(data => {
           setDefaultPromptText(data.prompt_template)
@@ -71,7 +71,7 @@ function Concepts() {
       .map(t => ({ id: t.id, label: t.label }))
     const isCustomPrompt = promptText && promptText !== defaultPromptText
 
-    fetch("http://localhost:8001/concepts/generate-batch", {
+    fetch("http://localhost:8008/concepts/generate-batch", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

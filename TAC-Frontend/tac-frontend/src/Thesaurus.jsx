@@ -18,7 +18,7 @@ function Thesaurus() {
 
   
 useEffect(() => {
-    fetch("http://localhost:8001/concepts")
+    fetch("http://localhost:8008/concepts")
       .then(res => res.json())
       .then(data => {
         const valides = data.concepts.filter(c => c.statut === "validé")

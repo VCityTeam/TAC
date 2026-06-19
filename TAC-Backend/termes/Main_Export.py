@@ -123,7 +123,7 @@ def generate_export(thesaurus_id: str):
         )
 
     return {
-        "export_id": export_id,
+        "id": export_id,
         "nom": f"Export_{th['nom']}_{date_creation[:10]}",
         "contenu_ttl": contenu_ttl,
         "statut": "généré",

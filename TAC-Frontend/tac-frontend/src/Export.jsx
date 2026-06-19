@@ -43,7 +43,14 @@ export default function Export() {
 
   const telecharger = (exportId, nom) => {
     fetch(`${API}/export/${exportId}/download`)
-      .then(res => res.blob())
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(data => {
+            throw new Error(data.detail || "Erreur lors du téléchargement")
+          })
+        }
+        return res.blob()
+      })
       .then(blob => {
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement("a")
@@ -52,12 +59,20 @@ export default function Export() {
         a.click()
         window.URL.revokeObjectURL(url)
       })
+      .catch(err => setMessage(`❌ ${err.message}`))
   }
 
   const voirExport = (exportId) => {
     fetch(`${API}/export/${exportId}`)
-      .then(res => res.json())
-      .then(data => setExportActif(data))
+      .then(res => res.json().then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          setMessage(`❌ ${data.detail || "Export non trouvé"}`)
+          loadExports()
+        } else {
+          setExportActif(data)
+        }
+      })
   }
 
   const envoyerOpentheso = (exportId) => {

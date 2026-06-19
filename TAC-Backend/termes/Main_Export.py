@@ -10,6 +10,7 @@ from rdflib.namespace import RDF, SKOS, DC
 import uuid
 from datetime import datetime
 from dotenv import load_dotenv
+from urllib.parse import quote
 import os
 
 load_dotenv()
@@ -24,10 +25,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-
-def get_session():
-    return driver.session()
 
 
 @app.post("/export/generate")
@@ -179,10 +176,16 @@ def download_export(export_id: str):
         if not export:
             raise HTTPException(status_code=404, detail="Export non trouvé")
 
+    filename = f"{export['nom']}.ttl"
+    ascii_fallback = filename.encode("ascii", "ignore").decode("ascii") or "export.ttl"
+    encoded_filename = quote(filename)
+
     return Response(
         content=export["contenu_ttl"],
         media_type="text/turtle",
-        headers={"Content-Disposition": f"attachment; filename={export['nom']}.ttl"}
+        headers={
+            "Content-Disposition": f"attachment; filename=\"{ascii_fallback}\"; filename*=UTF-8''{encoded_filename}"
+        }
     )
 
 

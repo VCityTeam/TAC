@@ -5,7 +5,7 @@ import uuid
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 import requests
 
@@ -32,6 +32,16 @@ class ConceptValide(BaseModel):
     validated_by: str
 
 
+class TermeRef(BaseModel):
+    id: str
+    label: str
+
+
+class GenerateBatchRequest(BaseModel):
+    termes: List[TermeRef]
+    prompt_template: Optional[str] = None
+
+
 @app.get("/concepts/generate")
 def generate_concept(terme_id: str, terme_label: str):
     prompt = generate_prompt(terme_label)
@@ -45,7 +55,7 @@ def generate_concept(terme_id: str, terme_label: str):
     )
     result = response.json()["response"]
     parsed = parse_concept(result)
-    
+
     return {
         "terme_id": terme_id,
         "model_id": "mistral:7b",
@@ -57,6 +67,43 @@ def generate_concept(terme_id: str, terme_label: str):
         "broader": parsed["broader"],
         "narrower": parsed["narrower"]
     }
+
+
+@app.get("/concepts/prompt")
+def get_default_prompt():
+    return {"prompt_template": DEFAULT_PROMPT_TEMPLATE}
+
+
+@app.post("/concepts/generate-batch")
+def generate_concepts_batch(payload: GenerateBatchRequest):
+    template = payload.prompt_template or DEFAULT_PROMPT_TEMPLATE
+    concepts = []
+
+    for terme in payload.termes:
+        prompt = template.format(terme=terme.label)
+        response = requests.post("http://localhost:11434/api/generate",
+            json={
+                "model": "mistral",
+                "prompt": prompt,
+                "stream": False
+            }
+        )
+        result = response.json()["response"]
+        parsed = parse_concept(result)
+
+        concepts.append({
+            "terme_id": terme.id,
+            "model_id": "mistral:7b",
+            "prompt_id": "prompt_custom" if payload.prompt_template else "prompt_v2_few_shot",
+            "iteration": 1,
+            "prefLabel": terme.label,
+            "definition": parsed["definition"],
+            "altLabel": parsed["altLabel"],
+            "broader": parsed["broader"],
+            "narrower": parsed["narrower"]
+        })
+
+    return {"concepts": concepts}
 
 
 @app.post("/concepts/validate")
@@ -168,8 +215,7 @@ def delete_all_concepts():
     return {"message": "Tous les concepts supprimés"}
 
 
-def generate_prompt(terme: str) -> str:
-    return f"""
+DEFAULT_PROMPT_TEMPLATE = """
         Tu es un expert en thésaurus pour le patrimoine culturel (SKOS).
         Réponds UNIQUEMENT en français, UNIQUEMENT sous forme de liste structurée.
         N'ajoute aucune explication, introduction ou commentaire.
@@ -225,6 +271,10 @@ def generate_prompt(terme: str) -> str:
         4. Concepts plus spécifiques :
         5. Concepts associés :
         """
+
+
+def generate_prompt(terme: str) -> str:
+    return DEFAULT_PROMPT_TEMPLATE.format(terme=terme)
 
 @app.patch("/concepts/{id}")
 def update_concept(id: str, data: dict):

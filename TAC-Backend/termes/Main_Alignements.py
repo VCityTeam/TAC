@@ -58,6 +58,45 @@ class AlignementUpdate(BaseModel):
     uri_externe: Optional[str] = None
 
 
+class GenerateAlignementsRequest(BaseModel):
+    thesaurus_tac_id: str
+    thesaurus_arango_nom: str
+    prompt_template: Optional[str] = None
+
+
+DEFAULT_ALIGNEMENT_PROMPT = """Tu es un expert en alignement de thésaurus SKOS.
+
+        Concepts du thésaurus TAC :
+        {tac_text}
+
+        Concepts du thésaurus externe ({thesaurus_arango_nom}) :
+        {arango_text}
+
+        Pour chaque concept TAC, trouve le concept externe le plus similaire sémantiquement.
+        Le concept TAC "peinture" peut s'aligner avec "Fresque" ou "Tempera" car ce sont des techniques de peinture.
+
+        Types d'alignement :
+        - exactMatch : concepts identiques ou quasi-identiques
+        - closeMatch : concepts très similaires ou du même domaine
+        - noMatch : aucun concept externe ne correspond sémantiquement (domaines différents)
+
+        IMPORTANT : Tu DOIS toujours retourner exactement une entrée par concept TAC, même s'il n'y a aucune correspondance.
+        Dans ce cas, utilise "type_alignement": "noMatch" et laisse "concept_externe_label" vide "".
+        Si l'URI est vide, mets une chaîne vide "".
+
+        Réponds UNIQUEMENT avec ce JSON, sans texte avant ou après, sans markdown :
+
+        [
+        {{
+            "concept_tac_id": "id du concept TAC",
+            "concept_tac_label": "label TAC",
+            "type_alignement": "exactMatch, closeMatch ou noMatch",
+            "concept_externe_label": "label externe",
+
+        }}
+        ]"""
+
+
 def call_gemini(prompt: str) -> str:
     client = genai.Client(api_key=GEMINI_API_KEY)
     response = client.models.generate_content(
@@ -86,8 +125,15 @@ def get_arango_thesauri():
     
     return {"thesauri": clean}
   
-@app.get("/alignements/generate")
-def generate_alignements(thesaurus_tac_id: str, thesaurus_arango_nom: str):
+@app.get("/alignements/prompt")
+def get_default_alignement_prompt():
+    return {"prompt_template": DEFAULT_ALIGNEMENT_PROMPT}
+
+
+@app.post("/alignements/generate")
+def generate_alignements(payload: GenerateAlignementsRequest):
+    thesaurus_tac_id = payload.thesaurus_tac_id
+    thesaurus_arango_nom = payload.thesaurus_arango_nom
 
     with get_session() as session:
         result = session.run("""
@@ -122,37 +168,12 @@ def generate_alignements(thesaurus_tac_id: str, thesaurus_arango_nom: str):
     print("=== TAC text ===", tac_text)
     print("=== Arango text ===", arango_text)
 
-    prompt = f"""Tu es un expert en alignement de thésaurus SKOS.
-
-        Concepts du thésaurus TAC :
-        {tac_text}
-
-        Concepts du thésaurus externe ({thesaurus_arango_nom}) :
-        {arango_text}
-
-        Pour chaque concept TAC, trouve le concept externe le plus similaire sémantiquement.
-        Le concept TAC "peinture" peut s'aligner avec "Fresque" ou "Tempera" car ce sont des techniques de peinture.
-
-        Types d'alignement :
-        - exactMatch : concepts identiques ou quasi-identiques
-        - closeMatch : concepts très similaires ou du même domaine
-        - noMatch : aucun concept externe ne correspond sémantiquement (domaines différents)
-
-        IMPORTANT : Tu DOIS toujours retourner exactement une entrée par concept TAC, même s'il n'y a aucune correspondance.
-        Dans ce cas, utilise "type_alignement": "noMatch" et laisse "concept_externe_label" vide "".
-        Si l'URI est vide, mets une chaîne vide "".
-
-        Réponds UNIQUEMENT avec ce JSON, sans texte avant ou après, sans markdown :
-
-        [
-        {{
-            "concept_tac_id": "id du concept TAC",
-            "concept_tac_label": "label TAC",
-            "type_alignement": "exactMatch, closeMatch ou noMatch",
-            "concept_externe_label": "label externe",
-
-        }}
-        ]"""
+    template = payload.prompt_template or DEFAULT_ALIGNEMENT_PROMPT
+    prompt = template.format(
+        tac_text=tac_text,
+        arango_text=arango_text,
+        thesaurus_arango_nom=thesaurus_arango_nom
+    )
 
     try:
         raw = call_gemini(prompt)

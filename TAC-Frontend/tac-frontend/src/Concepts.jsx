@@ -5,16 +5,20 @@ import "./termes.css"
 function Concepts() {
 
   const [termes, setTermes] = useState([])
-  const [selectedTerme, setSelectedTerme] = useState(null)
+  const [selectedIds, setSelectedIds] = useState([])
   const [search, setSearch] = useState("")
-  const [concept, setConcept] = useState(null)
+  const [generatedConcepts, setGeneratedConcepts] = useState([])
   const [loading, setLoading] = useState(false)
   const [concepts, setConcepts] = useState([])
   const [validatedBy, setValidatedBy] = useState("")
   const [editId, setEditId] = useState(null)
   const [editConcept, setEditConcept] = useState({})
+  const [showPrompt, setShowPrompt] = useState(false)
+  const [promptText, setPromptText] = useState("")
+  const [defaultPromptText, setDefaultPromptText] = useState("")
+  const [error, setError] = useState("")
   const navigate = useNavigate()
-  
+
 
 
   useEffect(() => {
@@ -23,7 +27,7 @@ function Concepts() {
       .then(data => setTermes(data.termes.filter(t => t.statut === "en attente")))
   }, [])
 
-  
+
   useEffect(() => {
     fetch("http://localhost:8001/concepts")
       .then(res => res.json())
@@ -31,64 +35,90 @@ function Concepts() {
   }, [])
 
 
-const termesFiltered = termes.filter(t =>
+  const termesFiltered = termes.filter(t =>
     t.label.toLowerCase().startsWith(search.toLowerCase())
-)
+  )
 
+  function toggleTerme(id) {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    )
+  }
 
-  function generateConcept() {
-    if (!selectedTerme) return
+  function togglePromptEditor() {
+    if (!showPrompt && !defaultPromptText) {
+      fetch("http://localhost:8001/concepts/prompt")
+        .then(res => res.json())
+        .then(data => {
+          setDefaultPromptText(data.prompt_template)
+          setPromptText(data.prompt_template)
+        })
+    }
+    setShowPrompt(!showPrompt)
+  }
+
+  function resetPrompt() {
+    setPromptText(defaultPromptText)
+  }
+
+  function generateConcepts() {
+    if (selectedIds.length === 0) return
     setLoading(true)
-    setConcept(null)
-    fetch(`http://localhost:8001/concepts/generate?terme_id=${selectedTerme.id}&terme_label=${encodeURIComponent(selectedTerme.label)}`)
-      .then(res => res.json())
-      .then(data => {
-        setConcept(data)
+    setGeneratedConcepts([])
+    setError("")
+    const termesPayload = termes
+      .filter(t => selectedIds.includes(t.id))
+      .map(t => ({ id: t.id, label: t.label }))
+    const isCustomPrompt = promptText && promptText !== defaultPromptText
+
+    fetch("http://localhost:8001/concepts/generate-batch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        termes: termesPayload,
+        prompt_template: isCustomPrompt ? promptText : null
+      })
+    })
+      .then(res => res.json().then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          setError(data.detail || "Erreur lors de la génération des concepts.")
+        } else {
+          setGeneratedConcepts(data.concepts || [])
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setError("Impossible de contacter le serveur de concepts.")
         setLoading(false)
       })
   }
 
 
-  function validateConcept() {
-    console.log("=== validateConcept appelé ===")
-    console.log("selectedTerme:", selectedTerme)
-    console.log("concept:", concept)
-    console.log("validatedBy:", validatedBy)
-    if (!concept || !validatedBy) return
+  function validateGeneratedConcept(c) {
+    if (!validatedBy) return
     fetch("http://localhost:8001/concepts/validate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        terme_id: selectedTerme.id,
-        prefLabel: concept.prefLabel,
-        definition: concept.definition,
-        altLabel: concept.altLabel,
-        broader: concept.broader,
-        narrower: concept.narrower,
-        model_id: concept.model_id,
-        prompt_id: concept.prompt_id,
-        iteration: concept.iteration,
-        validated_by: validatedBy
-      })
+      body: JSON.stringify({ ...c, validated_by: validatedBy })
     })
-      .then(res => res.json())
       .then(() => {
+        setGeneratedConcepts(prev => prev.filter(g => g !== c))
+        setTermes(prev => prev.filter(t => t.id !== c.terme_id))
+        setSelectedIds(prev => prev.filter(id => id !== c.terme_id))
         fetch("http://localhost:8001/concepts")
           .then(res => res.json())
           .then(data => setConcepts(data.concepts))
-        setTermes(termes.filter(t => t.id !== selectedTerme.id))
-        setConcept(null)
-        setSelectedTerme(null)
       })
   }
 
 
-  function rejectConcept() {
-    fetch(`http://localhost:8001/concepts/reject?terme_id=${selectedTerme.id}&iteration=${concept.iteration}`, {
+  function rejectGeneratedConcept(c) {
+    fetch(`http://localhost:8001/concepts/reject?terme_id=${c.terme_id}&iteration=${c.iteration}`, {
       method: "POST"
     })
       .then(() => {
-        setConcept(null)
+        setGeneratedConcepts(prev => prev.filter(g => g !== c))
       })
   }
 
@@ -117,15 +147,6 @@ const termesFiltered = termes.filter(t =>
     })
    }
 
-   function rejectConcept() {
-    fetch(`http://localhost:8001/concepts/reject?terme_id=${selectedTerme.id}&iteration=${concept.iteration}`, {
-        method: "POST"
-    })
-    .then(() => {
-        setConcepts([...concepts, { ...concept, statut: "rejeté" }])
-        setConcept(null)
-    })
-}
   return (
     <div>
       <nav className="navbar navbar-light sticky-top px-4">
@@ -177,9 +198,9 @@ const termesFiltered = termes.filter(t =>
           </div>
         </div>
 
-        {/* SÉLECTION TERME */}
+        {/* SÉLECTION TERMES */}
         <div className="section-card mb-3">
-          <div className="section-title">Sélectionner un terme</div>
+          <div className="section-title">Sélectionner un ou plusieurs termes</div>
           <input
             type="text"
             className="form-control mb-2"
@@ -187,57 +208,62 @@ const termesFiltered = termes.filter(t =>
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-        <select
-            className="form-control mb-3"
-            value={selectedTerme ? selectedTerme.id : ""}
-            onChange={e => {
-              setSelectedTerme(termes.find(t => t.id === e.target.value))
-              setConcept(null)
-              setEditId(null)
-              setEditConcept({})
-            }}
+          <div className="mb-3" style={{ maxHeight: "220px", overflowY: "auto", border: "1px solid var(--border)", borderRadius: "8px", padding: "8px" }}>
+            {termesFiltered.length === 0 ? (
+              <div className="text-muted px-2 py-1">Aucun terme trouvé</div>
+            ) : (
+              termesFiltered.map(t => (
+                <label key={t.id} className="d-flex align-items-center gap-2 px-2 py-1" style={{ cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(t.id)}
+                    onChange={() => toggleTerme(t.id)}
+                  />
+                  {t.label}
+                </label>
+              ))
+            )}
+          </div>
+
+          <div className="d-flex gap-2 mb-3">
+            <button
+              className="btn btn-accent"
+              onClick={generateConcepts}
+              disabled={selectedIds.length === 0 || loading}
             >
-            <option value="">-- Choisir un terme --</option>
-            {termesFiltered.map(t => (
-                <option key={t.id} value={t.id}>{t.label}</option>
-            ))}
-            </select>
-          <button
-            className="btn btn-accent"
-            onClick={generateConcept}
-            disabled={!selectedTerme || loading}
-          >
-            {loading ? "Génération en cours..." : "▶ Générer le concept"}
-          </button>
+              {loading ? "Génération en cours..." : `▶ Générer ${selectedIds.length > 1 ? `les ${selectedIds.length} concepts` : "le concept"}`}
+            </button>
+            <button className="btn btn-edit-sm" onClick={togglePromptEditor}>
+              📝 {showPrompt ? "Masquer le prompt" : "Modifier le prompt"}
+            </button>
+          </div>
+
+          {showPrompt && (
+            <div className="mb-2">
+              <textarea
+                className="form-control"
+                style={{ fontFamily: "monospace", fontSize: "12px", height: "260px" }}
+                value={promptText}
+                onChange={e => setPromptText(e.target.value)}
+              />
+              <div className="d-flex gap-2 mt-2">
+                <button className="btn btn-edit-sm" onClick={resetPrompt}>↺ Réinitialiser au prompt par défaut</button>
+              </div>
+              <div className="text-muted" style={{ fontSize: "12px", marginTop: "4px" }}>
+                Utilise <code>{"{terme}"}</code> comme emplacement du terme — ce prompt n'est utilisé que pour cette génération.
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="alert alert-danger mt-2">⚠️ {error}</div>
+          )}
         </div>
 
-        {/* RÉSULTAT LLM */}
-        {concept && (
+        {/* RÉSULTATS GÉNÉRÉS */}
+        {generatedConcepts.length > 0 && (
         <div className="section-card mb-3">
-            <div className="section-title">Concept généré</div>
-            <table className="table align-middle mb-3">
-            <tbody>
-                <tr><td className="fw-500">prefLabel</td>
-                <td>{editId === "new" ? <input className="form-control" value={editConcept.prefLabel || concept.prefLabel} onChange={e => setEditConcept({...editConcept, prefLabel: e.target.value})} /> : concept.prefLabel}</td>
-                </tr>
-                <tr><td className="fw-500">Définition</td>
-                <td>{editId === "new" ? <input className="form-control" value={editConcept.definition || concept.definition} onChange={e => setEditConcept({...editConcept, definition: e.target.value})} /> : concept.definition}</td>
-                </tr>
-                <tr><td className="fw-500">altLabel</td>
-                <td>{editId === "new" ? <input className="form-control" value={editConcept.altLabel || concept.altLabel} onChange={e => setEditConcept({...editConcept, altLabel: e.target.value})} /> : concept.altLabel}</td>
-                </tr>
-                <tr><td className="fw-500">Broader</td>
-                <td>{editId === "new" ? <input className="form-control" value={editConcept.broader || concept.broader} onChange={e => setEditConcept({...editConcept, broader: e.target.value})} /> : concept.broader}</td>
-                </tr>
-                <tr><td className="fw-500">Narrower</td>
-                <td>{editId === "new" ? <input className="form-control" value={editConcept.narrower || concept.narrower} onChange={e => setEditConcept({...editConcept, narrower: e.target.value})} /> : concept.narrower}</td>
-                </tr>
-                <tr><td className="fw-500">Modèle</td><td>{concept.model_id}</td></tr>
-                <tr><td className="fw-500">Prompt</td><td>{concept.prompt_id}</td></tr>
-                <tr><td className="fw-500">Itération</td><td>{concept.iteration}</td></tr>
-            </tbody>
-            </table>
-
+            <div className="section-title">Concepts générés</div>
             <input
             type="text"
             className="form-control mb-3"
@@ -245,20 +271,38 @@ const termesFiltered = termes.filter(t =>
             value={validatedBy}
             onChange={e => setValidatedBy(e.target.value)}
             />
-
-            <div className="d-flex gap-2">
-            {editId === "new" ? (
-                <button className="btn btn-accent" onClick={() => {
-                setConcept({...concept, ...editConcept})
-                setEditId(null)
-                }}>✅ Sauvegarder corrections</button>
-            ) : (
-                <>
-                <button className="btn btn-accent" onClick={validateConcept} disabled={!validatedBy}>✅ Valider</button>
-                <button className="btn btn-edit-sm" onClick={() => { setEditId("new"); setEditConcept({...concept}) }}>✏️ Corriger</button>
-                <button className="btn btn-delete-sm" onClick={rejectConcept}>❌ Rejeter</button>
-                </>
-            )}
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Terme</th>
+                    <th>Définition</th>
+                    <th>altLabel</th>
+                    <th>Broader</th>
+                    <th>Narrower</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {generatedConcepts.map((c, i) => (
+                    <tr key={i}>
+                      <td className="fw-500">{c.prefLabel}</td>
+                      <td>{c.definition}</td>
+                      <td>{c.altLabel}</td>
+                      <td>{c.broader}</td>
+                      <td>{c.narrower}</td>
+                      <td>
+                        <button className="btn btn-accent btn-sm me-1" onClick={() => validateGeneratedConcept(c)} disabled={!validatedBy}>
+                          ✅ Valider
+                        </button>
+                        <button className="btn btn-delete-sm" onClick={() => rejectGeneratedConcept(c)}>
+                          ❌ Rejeter
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
         </div>
         )}

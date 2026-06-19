@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import "./termes.css"
 
-const API = "http://localhost:8004"
+const API = "http://localhost:8005"
 
 export default function Export() {
   const [thesauri, setThesauri] = useState([])

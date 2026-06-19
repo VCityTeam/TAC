@@ -16,6 +16,10 @@ function Alignements() {
   const [editId, setEditId] = useState(null)
   const [editData, setEditData] = useState({})
   const [refresh, setRefresh] = useState(0)
+  const [showPrompt, setShowPrompt] = useState(false)
+  const [promptText, setPromptText] = useState("")
+  const [defaultPromptText, setDefaultPromptText] = useState("")
+  const [error, setError] = useState("")
 
   useEffect(() => {
     fetch("http://localhost:8002/thesaurus")
@@ -38,18 +42,49 @@ function Alignements() {
   }, [refresh])
 
 
+  function togglePromptEditor() {
+    if (!showPrompt && !defaultPromptText) {
+      fetch("http://localhost:8004/alignements/prompt")
+        .then(res => res.json())
+        .then(data => {
+          setDefaultPromptText(data.prompt_template)
+          setPromptText(data.prompt_template)
+        })
+    }
+    setShowPrompt(!showPrompt)
+  }
+
+  function resetPrompt() {
+    setPromptText(defaultPromptText)
+  }
+
   function generateAlignements() {
     if (!selectedTac || !selectedArango) return
     setLoading(true)
     setAlignementsGeneres([])
-    fetch(`http://localhost:8004/alignements/generate?thesaurus_tac_id=${selectedTac.id}&thesaurus_arango_nom=${encodeURIComponent(selectedArango)}`)
-      .then(res => res.json())
-      .then(data => {
-        setAlignementsGeneres(data.alignements || [])
+    setError("")
+    const isCustomPrompt = promptText && promptText !== defaultPromptText
+    fetch("http://localhost:8004/alignements/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        thesaurus_tac_id: selectedTac.id,
+        thesaurus_arango_nom: selectedArango,
+        prompt_template: isCustomPrompt ? promptText : null
+      })
+    })
+      .then(res => res.json().then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          setError(data.detail || "Erreur lors de la génération des alignements.")
+        } else {
+          setAlignementsGeneres(data.alignements || [])
+        }
         setLoading(false)
       })
       .catch(err => {
          console.error("Erreur generation :", err)
+         setError("Impossible de contacter le serveur d'alignements.")
          setLoading(false)
       })
   }
@@ -183,13 +218,39 @@ function Alignements() {
               </select>
             </div>
           </div>
-          <button
-            className="btn btn-accent"
-            onClick={generateAlignements}
-            disabled={!selectedTac || !selectedArango || loading}
-          >
-            {loading ? "Génération en cours..." : "▶ Générer les alignements"}
-          </button>
+          <div className="d-flex gap-2 mb-3">
+            <button
+              className="btn btn-accent"
+              onClick={generateAlignements}
+              disabled={!selectedTac || !selectedArango || loading}
+            >
+              {loading ? "Génération en cours..." : "▶ Générer les alignements"}
+            </button>
+            <button className="btn btn-edit-sm" onClick={togglePromptEditor}>
+              📝 {showPrompt ? "Masquer le prompt" : "Modifier le prompt"}
+            </button>
+          </div>
+
+          {showPrompt && (
+            <div className="mb-2">
+              <textarea
+                className="form-control"
+                style={{ fontFamily: "monospace", fontSize: "12px", height: "260px" }}
+                value={promptText}
+                onChange={e => setPromptText(e.target.value)}
+              />
+              <div className="d-flex gap-2 mt-2">
+                <button className="btn btn-edit-sm" onClick={resetPrompt}>↺ Réinitialiser au prompt par défaut</button>
+              </div>
+              <div className="text-muted" style={{ fontSize: "12px", marginTop: "4px" }}>
+                Utilise <code>{"{tac_text}"}</code>, <code>{"{arango_text}"}</code> et <code>{"{thesaurus_arango_nom}"}</code> comme emplacements — ce prompt n'est utilisé que pour cette génération.
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="alert alert-danger mt-2">⚠️ {error}</div>
+          )}
         </div>
 
         {/* SECTION 2 : Alignements générés */}
@@ -228,7 +289,7 @@ function Alignements() {
                       <td>{a.thesaurus_arango_nom}</td>
                       <td>{a.concept_externe_label}</td>
                       <td>
-                        <button className="btn btn-accent btn-sm me-1" onClick={() => validateAlignement(a)} disabled={!validatedBy || a.type_alignement === "noMatch"}>
+                        <button className="btn btn-accent btn-sm me-1" onClick={() => validateAlignement(a)} disabled={!validatedBy}>
                           ✅ Valider
                         </button>
                         <button className="btn btn-delete-sm" onClick={() => rejectAlignement(a)}>

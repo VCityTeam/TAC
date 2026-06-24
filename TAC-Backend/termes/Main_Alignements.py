@@ -6,23 +6,15 @@ import uuid
 import json
 import re
 import requests
-import base64
 from datetime import datetime
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from arango import ArangoClient
-import certifi
-os.environ['SSL_CERT_FILE'] = certifi.where()
-os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
 
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_MODEL = "mistral"
 
 app = FastAPI()
 
@@ -35,9 +27,12 @@ app.add_middleware(
 )
 
 def get_arango_db():
-    client = ArangoClient(hosts="http://localhost:8529")
-    db = client.db("as", username="rasri", password="")
-    return db
+    try:
+        client = ArangoClient(hosts="http://localhost:8529")
+        db = client.db("_system", username="root", password="MIDvi1234!!")
+        return db
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Impossible de se connecter à ArangoDB : {e}")
 
 
 class Alignement(BaseModel):
@@ -97,21 +92,31 @@ DEFAULT_ALIGNEMENT_PROMPT = """Tu es un expert en alignement de thésaurus SKOS.
         ]"""
 
 
-def call_gemini(prompt: str) -> str:
-    client = genai.Client(api_key=GEMINI_API_KEY)
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-    return response.text
+def call_ollama(prompt: str) -> str:
+    try:
+        response = requests.post(OLLAMA_URL, json={
+            "model": OLLAMA_MODEL,
+            "prompt": prompt,
+            "stream": False
+        }, timeout=600)
+        response.raise_for_status()
+        return response.json()["response"]
+    except requests.exceptions.ConnectionError:
+        raise HTTPException(status_code=503, detail="Ollama n'est pas démarré. Lance 'ollama serve' puis 'ollama pull mistral'.")
+    except requests.exceptions.Timeout:
+        raise HTTPException(status_code=504, detail="Ollama a mis trop de temps à répondre.")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Erreur Ollama : {e}")
 
 
 @app.get("/alignements/arango/thesauri")
 def get_arango_thesauri():
     db = get_arango_db()
-    thesauri = list(db.aql.execute("FOR theso IN thesaurus RETURN theso"))
-    
-    # Nettoyer les champs ArangoDB non sérialisables
+    try:
+        thesauri = list(db.aql.execute("FOR theso IN Thesaurus RETURN theso"))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur requête ArangoDB : {e}")
+
     clean = []
     for t in thesauri:
         clean.append({
@@ -122,7 +127,7 @@ def get_arango_thesauri():
             "creator": t.get("creator"),
             "concepts": t.get("concepts", [])
         })
-    
+
     return {"thesauri": clean}
   
 @app.get("/alignements/prompt")
@@ -135,65 +140,68 @@ def generate_alignements(payload: GenerateAlignementsRequest):
     thesaurus_tac_id = payload.thesaurus_tac_id
     thesaurus_arango_nom = payload.thesaurus_arango_nom
 
-    with get_session() as session:
-        result = session.run("""
-            MATCH (c:Concept)-[:APPARTIENT_A]->(th:Thesaurus {id: $id})
-            RETURN c.id AS id, c.prefLabel AS prefLabel,
-                   c.altLabel AS altLabel, c.broader AS broader,
-                   th.nom AS thesaurus_nom
-        """, id=thesaurus_tac_id)
-        concepts_tac = [dict(r) for r in result]
+    # 1. Récupérer les concepts TAC depuis Neo4j
+    try:
+        with get_session() as session:
+            result = session.run("""
+                MATCH (c:Concept)-[:APPARTIENT_A]->(th:Thesaurus {id: $id})
+                RETURN c.id AS id, c.prefLabel AS prefLabel,
+                       c.altLabel AS altLabel, c.broader AS broader,
+                       th.nom AS thesaurus_nom
+            """, id=thesaurus_tac_id)
+            concepts_tac = [dict(r) for r in result]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur Neo4j : {e}")
 
     if not concepts_tac:
-        raise HTTPException(status_code=404, detail="Aucun concept trouvé")
+        raise HTTPException(status_code=404, detail="Aucun concept trouvé pour ce thésaurus TAC.")
 
+    # 2. Récupérer le thésaurus ArangoDB
     db = get_arango_db()
-    results = list(db.aql.execute(f"FOR doc IN thesaurus FILTER doc.title == '{thesaurus_arango_nom}' RETURN doc"))
-    thesaurus_arango = results[0] if results else None
+    try:
+        results = list(db.aql.execute(f"FOR doc IN Thesaurus FILTER doc.title == '{thesaurus_arango_nom}' RETURN doc"))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur requête ArangoDB : {e}")
 
+    thesaurus_arango = results[0] if results else None
     if not thesaurus_arango:
-        raise HTTPException(status_code=404, detail="Thésaurus ArangoDB non trouvé")
+        raise HTTPException(status_code=404, detail=f"Thésaurus ArangoDB '{thesaurus_arango_nom}' non trouvé.")
 
     concepts_arango = thesaurus_arango.get("concepts", [])
-    print(f"=== concepts TAC: {len(concepts_tac)} | concepts Arango: {len(concepts_arango)} ===")
 
-    tac_text = "\n".join([ f"- ID:{c['id']} | {c['prefLabel']} | altLabel: {c['altLabel']} | broader: {c['broader']}"
+    # 3. Construire le prompt
+    tac_text = "\n".join([
+        f"- ID:{c['id']} | {c['prefLabel']} | altLabel: {c.get('altLabel','')} | broader: {c.get('broader','')}"
         for c in concepts_tac
     ])
-
-    arango_text = "\n".join([f"- {c['prefLabel']}"
-        for c in concepts_arango
-    ])
-
-    print("=== TAC text ===", tac_text)
-    print("=== Arango text ===", arango_text)
+    arango_text = "\n".join([f"- {c['prefLabel']}" for c in concepts_arango])
 
     template = payload.prompt_template or DEFAULT_ALIGNEMENT_PROMPT
-    prompt = template.format(
-        tac_text=tac_text,
-        arango_text=arango_text,
-        thesaurus_arango_nom=thesaurus_arango_nom
-    )
-
     try:
-        raw = call_gemini(prompt)
-    except genai.errors.APIError as e:
-        if e.code == 429:
-            raise HTTPException(status_code=429, detail="Quota Gemini dépassé, réessaie dans quelques instants.")
-        if e.code == 503:
-            raise HTTPException(status_code=503, detail="Gemini est surchargé en ce moment, réessaie dans quelques instants.")
-        raise HTTPException(status_code=502, detail=f"Erreur Gemini : {e}")
-    print("=== Gemini response ===", raw)
+        prompt = template.format(
+            tac_text=tac_text,
+            arango_text=arango_text,
+            thesaurus_arango_nom=thesaurus_arango_nom
+        )
+    except KeyError as e:
+        raise HTTPException(status_code=400, detail=f"Prompt invalide — variable inconnue : {e}")
 
+    # 4. Appeler Ollama
+    raw = call_ollama(prompt)
+
+    # 5. Parser la réponse JSON
     match = re.search(r'\[.*\]', raw, re.DOTALL)
     if not match:
-        raise HTTPException(status_code=500, detail="Gemini n'a pas retourné un JSON valide")
+        raise HTTPException(status_code=500, detail=f"Gemini n'a pas retourné un JSON valide. Réponse : {raw[:300]}")
+    try:
+        alignements = json.loads(match.group())
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=500, detail=f"JSON Gemini malformé : {e}")
 
-    alignements = json.loads(match.group())
-
+    thesaurus_nom = concepts_tac[0].get("thesaurus_nom") or thesaurus_tac_id
     for a in alignements:
         a["thesaurus_tac_id"] = thesaurus_tac_id
-        a["thesaurus_tac_nom"] = concepts_tac[0]["thesaurus_nom"]
+        a["thesaurus_tac_nom"] = thesaurus_nom
         a["thesaurus_arango_nom"] = thesaurus_arango_nom
         a["source_externe"] = thesaurus_arango.get("source", thesaurus_arango_nom)
         if a.get("type_alignement") == "noMatch":

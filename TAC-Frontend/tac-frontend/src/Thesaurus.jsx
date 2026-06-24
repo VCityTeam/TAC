@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "./termes.css"
 
 function Thesaurus() {
@@ -13,23 +13,28 @@ function Thesaurus() {
   const [validatedBy, setValidatedBy] = useState("")
   const [editId, setEditId] = useState(null)
   const [editData, setEditData] = useState({})
+  const [error, setError] = useState("")
+  const navigate = useNavigate()
 
 
 
   
 useEffect(() => {
-    fetch("http://localhost:8008/concepts")
+    fetch("http://localhost:8001/concepts")
       .then(res => res.json())
       .then(data => {
         const valides = data.concepts.filter(c => c.statut === "validé")
         setConcepts(valides)
       })
-      .catch(err => console.error("Erreur concepts:", err))
+      .catch(() => setError("Impossible de contacter le serveur de concepts (port 8001)."))
 
     fetch("http://localhost:8002/thesaurus")
       .then(res => res.json())
-      .then(data => setThesauri(data.thesauri))
-      .catch(err => console.error("Erreur thésaurus:", err))
+      .then(data => {
+        if (!data.thesauri) { setError("Réponse inattendue du serveur thésaurus."); return }
+        setThesauri(data.thesauri)
+      })
+      .catch(() => setError("Impossible de contacter le serveur thésaurus (port 8002). Vérifiez que Main_thesaurus.py est démarré."))
 }, [])
   
   const conceptsAssocies = new Set(thesauri.flatMap(t => t.concept_ids || []))
@@ -160,7 +165,7 @@ function rejectThesaurus(th) {
           <Link to="/concepts"><span className="step">Concepts</span></Link>
           <Link to="/thesaurus"><span className="step active">Thésaurus</span></Link>
           <Link to="/alignements"><span className="step">Alignements</span></Link>
-          <span className="step">Export</span>
+          <Link to="/export"><span className="step">Export</span></Link>
         </div>
       </nav>
 
@@ -169,6 +174,10 @@ function rejectThesaurus(th) {
         <div className="mb-4">
           <h1 className="page-title">Gestion des thésauri</h1>
         </div>
+
+        {error && (
+          <div className="alert alert-danger mb-3">⚠️ {error}</div>
+        )}
 
         {/* STATS */}
         <div className="row g-3 mb-4">
@@ -396,7 +405,9 @@ function rejectThesaurus(th) {
         <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
           <span className="count-info">{thesauri.length} thésauri</span>
           <button className="btn btn-accent" onClick={deleteAll}>🗑 Supprimer tout</button>
-          <button className="btn btn-accent">Passer aux alignements →</button>
+          <button className="btn btn-accent" onClick={() => navigate("/alignements")}>
+            Passer aux alignements →
+          </button>
         </div>
 
       </div>

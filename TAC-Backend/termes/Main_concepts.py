@@ -8,12 +8,14 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 import requests
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:5174"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -30,6 +32,26 @@ class ConceptValide(BaseModel):
     prompt_id: str
     iteration: int
     validated_by: str
+
+
+class ConceptUpdate(BaseModel):
+    prefLabel: Optional[str] = None
+    definition: Optional[str] = None
+    altLabel: Optional[str] = None
+    broader: Optional[str] = None
+    narrower: Optional[str] = None
+
+
+class ConceptRejet(BaseModel):
+    terme_id: str
+    prefLabel: str
+    definition: str
+    altLabel: str
+    broader: str
+    narrower: str
+    model_id: str
+    prompt_id: str
+    iteration: int
 
 
 class TermeRef(BaseModel):
@@ -148,13 +170,41 @@ def validate_concept(concept: ConceptValide):
 
 
 @app.post("/concepts/reject")
-def reject_concept(terme_id: str, iteration: int):
+def reject_concept(concept: ConceptRejet):
     with get_session() as session:
+        id = str(uuid.uuid4())[:8]
+        now = datetime.now().strftime("%Y-%m-%d %H:%M")
         session.run("""
             MATCH (t:Terme {id: $terme_id})
-            SET t.iteration = $iteration
-        """, terme_id=terme_id, iteration=iteration + 1)
-    return {"message": "Concept rejeté", "prochaine_iteration": iteration + 1}
+            CREATE (c:Concept {
+                id: $id,
+                prefLabel: $prefLabel,
+                definition: $definition,
+                altLabel: $altLabel,
+                broader: $broader,
+                narrower: $narrower,
+                model_id: $model_id,
+                prompt_id: $prompt_id,
+                iteration: $iteration,
+                validated_at: $validated_at,
+                statut: 'rejeté'
+            })
+            CREATE (t)-[:A_CONCEPT]->(c)
+            SET t.iteration = $next_iteration
+        """,
+            terme_id=concept.terme_id, id=id,
+            prefLabel=concept.prefLabel,
+            definition=concept.definition,
+            altLabel=concept.altLabel,
+            broader=concept.broader,
+            narrower=concept.narrower,
+            model_id=concept.model_id,
+            prompt_id=concept.prompt_id,
+            iteration=concept.iteration,
+            validated_at=now,
+            next_iteration=concept.iteration + 1
+        )
+    return {"message": "Concept rejeté", "id": id, "prochaine_iteration": concept.iteration + 1}
 
 
 @app.get("/concepts")
@@ -177,7 +227,7 @@ def get_concepts():
 
 
 @app.patch("/concepts/{id}")
-def update_concept(id: str, concept: ConceptValide):
+def update_concept(id: str, concept: ConceptUpdate):
     with get_session() as session:
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
         session.run("""
@@ -275,29 +325,6 @@ DEFAULT_PROMPT_TEMPLATE = """
 
 def generate_prompt(terme: str) -> str:
     return DEFAULT_PROMPT_TEMPLATE.format(terme=terme)
-
-@app.patch("/concepts/{id}")
-def update_concept(id: str, data: dict):
-    with get_session() as session:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M")
-        session.run("""
-            MATCH (c:Concept {id: $id})
-            SET c.prefLabel = $prefLabel,
-                c.definition = $definition,
-                c.altLabel = $altLabel,
-                c.broader = $broader,
-                c.narrower = $narrower,
-                c.updated_at = $updated_at
-        """,
-            id=id,
-            prefLabel=data.get("prefLabel"),
-            definition=data.get("definition"),
-            altLabel=data.get("altLabel"),
-            broader=data.get("broader"),
-            narrower=data.get("narrower"),
-            updated_at=now
-        )
-    return {"message": "Concept modifié", "id": id}
 
 def parse_concept(text: str) -> dict:
     lines = text.strip().split("\n")

@@ -47,7 +47,7 @@ function Concepts() {
 
   function togglePromptEditor() {
     if (!showPrompt && !defaultPromptText) {
-      fetch("http://localhost:8008/concepts/prompt")
+      fetch("http://localhost:8001/concepts/prompt")
         .then(res => res.json())
         .then(data => {
           setDefaultPromptText(data.prompt_template)
@@ -71,7 +71,7 @@ function Concepts() {
       .map(t => ({ id: t.id, label: t.label }))
     const isCustomPrompt = promptText && promptText !== defaultPromptText
 
-    fetch("http://localhost:8008/concepts/generate-batch", {
+    fetch("http://localhost:8001/concepts/generate-batch", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -114,11 +114,16 @@ function Concepts() {
 
 
   function rejectGeneratedConcept(c) {
-    fetch(`http://localhost:8001/concepts/reject?terme_id=${c.terme_id}&iteration=${c.iteration}`, {
-      method: "POST"
+    fetch("http://localhost:8001/concepts/reject", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(c)
     })
       .then(() => {
         setGeneratedConcepts(prev => prev.filter(g => g !== c))
+        fetch("http://localhost:8001/concepts")
+          .then(res => res.json())
+          .then(data => setConcepts(data.concepts))
       })
   }
 
@@ -138,7 +143,13 @@ function Concepts() {
     fetch(`http://localhost:8001/concepts/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editConcept)
+        body: JSON.stringify({
+            prefLabel: editConcept.prefLabel,
+            definition: editConcept.definition,
+            altLabel: editConcept.altLabel,
+            broader: editConcept.broader,
+            narrower: editConcept.narrower,
+        })
     })
     .then(() => {
         setConcepts(concepts.map(c => c.id === id ? { ...c, ...editConcept } : c))
@@ -333,11 +344,31 @@ function Concepts() {
                 {concepts.map(c => (
                 <tr key={c.id}>
                     <td className="fw-500">{c.terme}</td>
-                    <td>{c.prefLabel}</td>
-                    <td>{c.definition}</td>
-                    <td>{c.altLabel}</td>
-                    <td>{c.broader}</td>
-                    <td>{c.narrower}</td>
+                    <td>
+                    {editId === c.id
+                        ? <input className="form-control form-control-sm" value={editConcept.prefLabel || ""} onChange={e => setEditConcept({...editConcept, prefLabel: e.target.value})} />
+                        : c.prefLabel}
+                    </td>
+                    <td>
+                    {editId === c.id
+                        ? <input className="form-control form-control-sm" value={editConcept.definition || ""} onChange={e => setEditConcept({...editConcept, definition: e.target.value})} />
+                        : c.definition}
+                    </td>
+                    <td>
+                    {editId === c.id
+                        ? <input className="form-control form-control-sm" value={editConcept.altLabel || ""} onChange={e => setEditConcept({...editConcept, altLabel: e.target.value})} />
+                        : c.altLabel}
+                    </td>
+                    <td>
+                    {editId === c.id
+                        ? <input className="form-control form-control-sm" value={editConcept.broader || ""} onChange={e => setEditConcept({...editConcept, broader: e.target.value})} />
+                        : c.broader}
+                    </td>
+                    <td>
+                    {editId === c.id
+                        ? <input className="form-control form-control-sm" value={editConcept.narrower || ""} onChange={e => setEditConcept({...editConcept, narrower: e.target.value})} />
+                        : c.narrower}
+                    </td>
                     <td className="id-cell">{c.model_id}</td>
                     <td className="id-cell">{c.prompt_id}</td>
                     <td>{c.iteration}</td>
@@ -349,8 +380,17 @@ function Concepts() {
                     <td className="id-cell">{c.validated_by}</td>
                     <td>{c.validated_at}</td>
                     <td>
-                    <button className="btn btn-edit-sm" onClick={() => { setEditId(c.id); setEditConcept({...c}) }}>✏️ Modifier</button>
-                    <button className="btn btn-delete-sm" onClick={() => deleteConcept(c.id)}>🗑 Supprimer</button>
+                    {editId === c.id ? (
+                        <>
+                        <button className="btn btn-accent btn-sm me-1" onClick={() => updateConcept(c.id)}>💾 Sauvegarder</button>
+                        <button className="btn btn-edit-sm" onClick={() => { setEditId(null); setEditConcept({}) }}>✖ Annuler</button>
+                        </>
+                    ) : (
+                        <>
+                        <button className="btn btn-edit-sm" onClick={() => { setEditId(c.id); setEditConcept({...c}) }}>✏️ Modifier</button>
+                        <button className="btn btn-delete-sm" onClick={() => deleteConcept(c.id)}>🗑 Supprimer</button>
+                        </>
+                    )}
                     </td>
                 </tr>
                 ))}

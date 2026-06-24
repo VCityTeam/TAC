@@ -29,9 +29,12 @@ function Alignements() {
 
   useEffect(() => {
     fetch("http://localhost:8004/alignements/arango/thesauri")
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) return res.json().then(d => { throw new Error(d.detail || `Erreur ${res.status}`) })
+        return res.json()
+      })
       .then(data => setThesauriArango(data["thesauri"] || []))
-      .catch(err => console.error("Erreur ArangoDB:", err))
+      .catch(err => setError(`ArangoDB inaccessible : ${err.message}. Vérifiez qu'ArangoDB tourne sur le port 8529.`))
   }, [])
 
 

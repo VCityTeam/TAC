@@ -1,7 +1,8 @@
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-from DataBase import get_session
+from DataBase import get_arango_db
+
 import uuid
 import json
 import re
@@ -11,7 +12,6 @@ from typing import Optional, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from arango import ArangoClient
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "mistral"
@@ -25,14 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-def get_arango_db():
-    try:
-        client = ArangoClient(hosts="http://localhost:8529")
-        db = client.db("_system", username="root", password="MIDvi1234!!")
-        return db
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=f"Impossible de se connecter à ArangoDB : {e}")
 
 
 class Alignement(BaseModel):
@@ -129,7 +121,8 @@ def get_arango_thesauri():
         })
 
     return {"thesauri": clean}
-  
+
+
 @app.get("/alignements/prompt")
 def get_default_alignement_prompt():
     return {"prompt_template": DEFAULT_ALIGNEMENT_PROMPT}
@@ -140,26 +133,44 @@ def generate_alignements(payload: GenerateAlignementsRequest):
     thesaurus_tac_id = payload.thesaurus_tac_id
     thesaurus_arango_nom = payload.thesaurus_arango_nom
 
-    # 1. Récupérer les concepts TAC depuis Neo4j
+    # ---- NEO4J — récupération concepts TAC ----
+    # try:
+    #     with get_session() as session:
+    #         result = session.run("""
+    #             MATCH (c:Concept)-[:APPARTIENT_A]->(th:Thesaurus {id: $id})
+    #             RETURN c.id AS id, c.prefLabel AS prefLabel,
+    #                    c.altLabel AS altLabel, c.broader AS broader,
+    #                    th.nom AS thesaurus_nom
+    #         """, id=thesaurus_tac_id)
+    #         concepts_tac = [dict(r) for r in result]
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=f"Erreur Neo4j : {e}")
+
+    # ---- ARANGODB — récupération concepts TAC ----
+    db = get_arango_db()
     try:
-        with get_session() as session:
-            result = session.run("""
-                MATCH (c:Concept)-[:APPARTIENT_A]->(th:Thesaurus {id: $id})
-                RETURN c.id AS id, c.prefLabel AS prefLabel,
-                       c.altLabel AS altLabel, c.broader AS broader,
-                       th.nom AS thesaurus_nom
-            """, id=thesaurus_tac_id)
-            concepts_tac = [dict(r) for r in result]
+        cursor = db.aql.execute("""
+            FOR th IN Thesauri FILTER th.id == @id
+              FOR c IN 1..1 INBOUND th ConceptThesaurus
+              RETURN {
+                id: c.id, prefLabel: c.prefLabel,
+                altLabel: c.altLabel, broader: c.broader,
+                thesaurus_nom: th.nom
+              }
+        """, bind_vars={"id": thesaurus_tac_id})
+        concepts_tac = list(cursor)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur Neo4j : {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur ArangoDB : {e}")
 
     if not concepts_tac:
         raise HTTPException(status_code=404, detail="Aucun concept trouvé pour ce thésaurus TAC.")
 
-    # 2. Récupérer le thésaurus ArangoDB
-    db = get_arango_db()
+    # 2. Récupérer le thésaurus ArangoDB externe (collection "Thesaurus")
     try:
-        results = list(db.aql.execute(f"FOR doc IN Thesaurus FILTER doc.title == '{thesaurus_arango_nom}' RETURN doc"))
+        results = list(db.aql.execute(
+            "FOR doc IN Thesaurus FILTER doc.title == @nom RETURN doc",
+            bind_vars={"nom": thesaurus_arango_nom}
+        ))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur requête ArangoDB : {e}")
 
@@ -169,7 +180,6 @@ def generate_alignements(payload: GenerateAlignementsRequest):
 
     concepts_arango = thesaurus_arango.get("concepts", [])
 
-    # 3. Construire le prompt
     tac_text = "\n".join([
         f"- ID:{c['id']} | {c['prefLabel']} | altLabel: {c.get('altLabel','')} | broader: {c.get('broader','')}"
         for c in concepts_tac
@@ -186,10 +196,8 @@ def generate_alignements(payload: GenerateAlignementsRequest):
     except KeyError as e:
         raise HTTPException(status_code=400, detail=f"Prompt invalide — variable inconnue : {e}")
 
-    # 4. Appeler Ollama
     raw = call_ollama(prompt)
 
-    # 5. Parser la réponse JSON
     match = re.search(r'\[.*\]', raw, re.DOTALL)
     if not match:
         raise HTTPException(status_code=500, detail=f"Gemini n'a pas retourné un JSON valide. Réponse : {raw[:300]}")
@@ -212,129 +220,167 @@ def generate_alignements(payload: GenerateAlignementsRequest):
 
 @app.post("/alignements/validate")
 def validate_alignement(alignement: Alignement):
-    with get_session() as session:
-        id = str(uuid.uuid4())[:8]
-        now = datetime.now().strftime("%Y-%m-%d %H:%M")
-        session.run("""
-            MATCH (c:Concept {id: $concept_tac_id})
-            CREATE (a:Alignement {
-                id: $id,
-                thesaurus_tac_id: $thesaurus_tac_id,
-                thesaurus_tac_nom: $thesaurus_tac_nom,
-                concept_tac_label: $concept_tac_label,
-                type_alignement: $type_alignement,
-                thesaurus_arango_nom: $thesaurus_arango_nom,
-                concept_externe_label: $concept_externe_label,
-                uri_externe: $uri_externe,
-                source_externe: $source_externe,
-                validated_by: $validated_by,
-                validated_at: $validated_at,
-                created_at: $created_at,
-                statut: 'validé'
-            })
-            CREATE (c)-[:A_ALIGNEMENT]->(a)
-        """,
-            id=id, thesaurus_tac_id=alignement.thesaurus_tac_id,
-            thesaurus_tac_nom=alignement.thesaurus_tac_nom,
-            concept_tac_id=alignement.concept_tac_id,
-            concept_tac_label=alignement.concept_tac_label,
-            type_alignement=alignement.type_alignement,
-            thesaurus_arango_nom=alignement.thesaurus_arango_nom,
-            concept_externe_label=alignement.concept_externe_label,
-            uri_externe=alignement.uri_externe,
-            source_externe=alignement.source_externe,
-            validated_by=alignement.validated_by,
-            validated_at=now, created_at=now
-        )
+    id = str(uuid.uuid4())[:8]
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    # ---- NEO4J ----
+    # with get_session() as session:
+    #     session.run("""
+    #         MATCH (c:Concept {id: $concept_tac_id})
+    #         CREATE (a:Alignement {
+    #             id: $id, thesaurus_tac_id: $thesaurus_tac_id, thesaurus_tac_nom: $thesaurus_tac_nom,
+    #             concept_tac_label: $concept_tac_label, type_alignement: $type_alignement,
+    #             thesaurus_arango_nom: $thesaurus_arango_nom, concept_externe_label: $concept_externe_label,
+    #             uri_externe: $uri_externe, source_externe: $source_externe,
+    #             validated_by: $validated_by, validated_at: $validated_at,
+    #             created_at: $created_at, statut: 'validé'
+    #         })
+    #         CREATE (c)-[:A_ALIGNEMENT]->(a)
+    #     """, id=id, ...)
+
+    # ---- ARANGODB ----
+    db = get_arango_db()
+    c_cursor = db.aql.execute("FOR c IN Concepts FILTER c.id == @id RETURN c", bind_vars={"id": alignement.concept_tac_id})
+    concepts = list(c_cursor)
+    if not concepts:
+        raise HTTPException(status_code=404, detail="Concept TAC non trouvé")
+    concept = concepts[0]
+
+    al_meta = db.collection("Alignements").insert({
+        "id": id,
+        "thesaurus_tac_id": alignement.thesaurus_tac_id,
+        "thesaurus_tac_nom": alignement.thesaurus_tac_nom,
+        "concept_tac_label": alignement.concept_tac_label,
+        "type_alignement": alignement.type_alignement,
+        "thesaurus_arango_nom": alignement.thesaurus_arango_nom,
+        "concept_externe_label": alignement.concept_externe_label,
+        "uri_externe": alignement.uri_externe,
+        "source_externe": alignement.source_externe,
+        "validated_by": alignement.validated_by,
+        "validated_at": now, "created_at": now, "statut": "validé"
+    })
+    db.collection("ConceptAlignement").insert({"_from": concept["_id"], "_to": al_meta["_id"]})
+
     return {"message": "Alignement validé", "id": id}
 
 
 @app.post("/alignements/reject")
 def reject_alignement(alignement: Alignement):
-    with get_session() as session:
-        id = str(uuid.uuid4())[:8]
-        now = datetime.now().strftime("%Y-%m-%d %H:%M")
-        session.run("""
-            MATCH (c:Concept {id: $concept_tac_id})
-            CREATE (a:Alignement {
-                id: $id,
-                thesaurus_tac_id: $thesaurus_tac_id,
-                thesaurus_tac_nom: $thesaurus_tac_nom,
-                concept_tac_label: $concept_tac_label,
-                type_alignement: $type_alignement,
-                thesaurus_arango_nom: $thesaurus_arango_nom,
-                concept_externe_label: $concept_externe_label,
-                uri_externe: $uri_externe,
-                source_externe: $source_externe,
-                validated_by: $validated_by,
-                validated_at: $validated_at,
-                created_at: $created_at,
-                statut: 'rejeté'
-            })
-            CREATE (c)-[:A_ALIGNEMENT]->(a)
-        """,
-            id=id, thesaurus_tac_id=alignement.thesaurus_tac_id,
-            thesaurus_tac_nom=alignement.thesaurus_tac_nom,
-            concept_tac_id=alignement.concept_tac_id,
-            concept_tac_label=alignement.concept_tac_label,
-            type_alignement=alignement.type_alignement,
-            thesaurus_arango_nom=alignement.thesaurus_arango_nom,
-            concept_externe_label=alignement.concept_externe_label,
-            uri_externe=alignement.uri_externe,
-            source_externe=alignement.source_externe,
-            validated_by=alignement.validated_by,
-            validated_at=now, created_at=now
-        )
+    id = str(uuid.uuid4())[:8]
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    # ---- NEO4J ----
+    # with get_session() as session:
+    #     session.run("""
+    #         MATCH (c:Concept {id: $concept_tac_id})
+    #         CREATE (a:Alignement {
+    #             id: $id, ..., statut: 'rejeté'
+    #         })
+    #         CREATE (c)-[:A_ALIGNEMENT]->(a)
+    #     """, id=id, ...)
+
+    # ---- ARANGODB ----
+    db = get_arango_db()
+    c_cursor = db.aql.execute("FOR c IN Concepts FILTER c.id == @id RETURN c", bind_vars={"id": alignement.concept_tac_id})
+    concepts = list(c_cursor)
+    if not concepts:
+        raise HTTPException(status_code=404, detail="Concept TAC non trouvé")
+    concept = concepts[0]
+
+    al_meta = db.collection("Alignements").insert({
+        "id": id,
+        "thesaurus_tac_id": alignement.thesaurus_tac_id,
+        "thesaurus_tac_nom": alignement.thesaurus_tac_nom,
+        "concept_tac_label": alignement.concept_tac_label,
+        "type_alignement": alignement.type_alignement,
+        "thesaurus_arango_nom": alignement.thesaurus_arango_nom,
+        "concept_externe_label": alignement.concept_externe_label,
+        "uri_externe": alignement.uri_externe,
+        "source_externe": alignement.source_externe,
+        "validated_by": alignement.validated_by,
+        "validated_at": now, "created_at": now, "statut": "rejeté"
+    })
+    db.collection("ConceptAlignement").insert({"_from": concept["_id"], "_to": al_meta["_id"]})
+
     return {"message": "Alignement rejeté", "id": id}
 
 
 @app.get("/alignements")
 def get_alignements():
-    with get_session() as session:
-        result = session.run("""
-            MATCH (c:Concept)-[:A_ALIGNEMENT]->(a:Alignement)
-            RETURN a.id AS id,
-                   a.thesaurus_tac_nom AS thesaurus_tac_nom,
-                   a.concept_tac_label AS concept_tac_label,
-                   a.type_alignement AS type_alignement,
-                   a.thesaurus_arango_nom AS thesaurus_arango_nom,
-                   a.concept_externe_label AS concept_externe_label,
-                   a.uri_externe AS uri_externe,
-                   a.source_externe AS source_externe,
-                   a.statut AS statut,
-                   a.validated_by AS validated_by,
-                   a.validated_at AS validated_at
-        """)
-        alignements = [dict(r) for r in result]
+    # ---- NEO4J ----
+    # with get_session() as session:
+    #     result = session.run("""
+    #         MATCH (c:Concept)-[:A_ALIGNEMENT]->(a:Alignement)
+    #         RETURN a.id AS id, a.thesaurus_tac_nom AS thesaurus_tac_nom, ...
+    #     """)
+    #     alignements = [dict(r) for r in result]
+
+    # ---- ARANGODB ----
+    db = get_arango_db()
+    cursor = db.aql.execute("""
+        FOR a IN Alignements
+          RETURN {
+            id: a.id, thesaurus_tac_nom: a.thesaurus_tac_nom,
+            concept_tac_label: a.concept_tac_label, type_alignement: a.type_alignement,
+            thesaurus_arango_nom: a.thesaurus_arango_nom,
+            concept_externe_label: a.concept_externe_label,
+            uri_externe: a.uri_externe, source_externe: a.source_externe,
+            statut: a.statut, validated_by: a.validated_by, validated_at: a.validated_at
+          }
+    """)
+    alignements = list(cursor)
+
     return {"alignements": alignements}
 
 
 @app.patch("/alignements/{id}")
 def update_alignement(id: str, data: AlignementUpdate):
-    with get_session() as session:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        session.run("""
-            MATCH (a:Alignement {id: $id})
-            SET a.type_alignement = $type_alignement,
-                a.uri_externe = $uri_externe,
-                a.updated_at = $updated_at
-        """,
-            id=id, type_alignement=data.type_alignement,
-            uri_externe=data.uri_externe, updated_at=now
-        )
+    # ---- NEO4J ----
+    # with get_session() as session:
+    #     session.run("""
+    #         MATCH (a:Alignement {id: $id})
+    #         SET a.type_alignement = $type_alignement, a.uri_externe = $uri_externe, a.updated_at = $updated_at
+    #     """, id=id, type_alignement=data.type_alignement, uri_externe=data.uri_externe, updated_at=now)
+
+    # ---- ARANGODB ----
+    db = get_arango_db()
+    db.aql.execute("""
+        FOR a IN Alignements FILTER a.id == @id
+          UPDATE a WITH {type_alignement: @type_alignement, uri_externe: @uri_externe, updated_at: @now} IN Alignements
+    """, bind_vars={"id": id, "type_alignement": data.type_alignement, "uri_externe": data.uri_externe, "now": now})
+
     return {"message": "Alignement modifié", "id": id}
 
 
 @app.delete("/alignements/{id}")
 def delete_alignement(id: str):
-    with get_session() as session:
-        session.run("MATCH (a:Alignement {id: $id}) DETACH DELETE a", id=id)
+    # ---- NEO4J ----
+    # with get_session() as session:
+    #     session.run("MATCH (a:Alignement {id: $id}) DETACH DELETE a", id=id)
+
+    # ---- ARANGODB ----
+    db = get_arango_db()
+    db.aql.execute("""
+        FOR a IN Alignements FILTER a.id == @id
+          FOR e IN ConceptAlignement FILTER e._to == a._id
+          REMOVE e IN ConceptAlignement
+    """, bind_vars={"id": id})
+    db.aql.execute("FOR a IN Alignements FILTER a.id == @id REMOVE a IN Alignements", bind_vars={"id": id})
+
     return {"message": f"Alignement {id} supprimé"}
 
 
 @app.delete("/alignements")
 def delete_all_alignements():
-    with get_session() as session:
-        session.run("MATCH (a:Alignement) DETACH DELETE a")
+    # ---- NEO4J ----
+    # with get_session() as session:
+    #     session.run("MATCH (a:Alignement) DETACH DELETE a")
+
+    # ---- ARANGODB ----
+    db = get_arango_db()
+    db.aql.execute("FOR e IN ConceptAlignement REMOVE e IN ConceptAlignement")
+    db.aql.execute("FOR a IN Alignements REMOVE a IN Alignements")
+
     return {"message": "Tous les alignements supprimés"}

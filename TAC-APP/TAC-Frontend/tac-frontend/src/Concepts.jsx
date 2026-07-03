@@ -17,6 +17,10 @@ function Concepts() {
   const [promptText, setPromptText] = useState("")
   const [defaultPromptText, setDefaultPromptText] = useState("")
   const [error, setError] = useState("")
+  const [showManuelForm, setShowManuelForm] = useState(false)
+  const [manuelForm, setManuelForm] = useState({ terme: "", prefLabel: "", definition: "", altLabel: "", broader: "", narrower: "", validated_by: "" })
+  const [manuelError, setManuelError] = useState("")
+  const [manuelSuccess, setManuelSuccess] = useState("")
   const navigate = useNavigate()
 
 
@@ -157,6 +161,29 @@ function Concepts() {
         setEditConcept({})
     })
    }
+
+  function createConceptManuel(e) {
+    e.preventDefault()
+    setManuelError("")
+    setManuelSuccess("")
+    if (!manuelForm.terme.trim()) { setManuelError("Le nom du terme est obligatoire."); return }
+    if (!manuelForm.validated_by.trim()) { setManuelError("Le nom du validateur est obligatoire."); return }
+    fetch("http://localhost:8001/concepts/manuel", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(manuelForm)
+    })
+      .then(res => res.json().then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) { setManuelError(data.detail || "Erreur lors de la création."); return }
+        setManuelSuccess("Concept créé avec succès.")
+        setManuelForm({ terme: "", prefLabel: "", definition: "", altLabel: "", broader: "", narrower: "", validated_by: "" })
+        fetch("http://localhost:8001/concepts")
+          .then(res => res.json())
+          .then(data => setConcepts(data.concepts))
+      })
+      .catch(() => setManuelError("Impossible de contacter le serveur."))
+  }
 
   return (
     <div>
@@ -317,6 +344,91 @@ function Concepts() {
             </div>
         </div>
         )}
+
+        {/* AJOUT MANUEL D'UN CONCEPT */}
+        <div className="section-card mb-3">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="section-title mb-0">Ajouter un concept manuellement</div>
+            <button className="btn btn-edit-sm" onClick={() => { setShowManuelForm(!showManuelForm); setManuelError(""); setManuelSuccess("") }}>
+              {showManuelForm ? "▲ Masquer" : "➕ Nouveau concept"}
+            </button>
+          </div>
+
+          {showManuelForm && (
+            <form onSubmit={createConceptManuel} className="mt-3">
+              <div className="row g-2">
+                <div className="col-md-4">
+                  <label className="form-label fw-bold">Terme (nom) <span className="text-danger">*</span></label>
+                  <input
+                    className="form-control form-control-sm"
+                    placeholder="Ex : Peinture"
+                    value={manuelForm.terme}
+                    onChange={e => setManuelForm({ ...manuelForm, terme: e.target.value })}
+                  />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">prefLabel</label>
+                  <input
+                    className="form-control form-control-sm"
+                    placeholder="Étiquette préférée (optionnel)"
+                    value={manuelForm.prefLabel}
+                    onChange={e => setManuelForm({ ...manuelForm, prefLabel: e.target.value })}
+                  />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">altLabel</label>
+                  <input
+                    className="form-control form-control-sm"
+                    placeholder="Synonymes (optionnel)"
+                    value={manuelForm.altLabel}
+                    onChange={e => setManuelForm({ ...manuelForm, altLabel: e.target.value })}
+                  />
+                </div>
+                <div className="col-md-12">
+                  <label className="form-label">Définition</label>
+                  <input
+                    className="form-control form-control-sm"
+                    placeholder="Définition du concept (optionnel)"
+                    value={manuelForm.definition}
+                    onChange={e => setManuelForm({ ...manuelForm, definition: e.target.value })}
+                  />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">Broader (concept parent)</label>
+                  <input
+                    className="form-control form-control-sm"
+                    placeholder="Concept plus large (optionnel)"
+                    value={manuelForm.broader}
+                    onChange={e => setManuelForm({ ...manuelForm, broader: e.target.value })}
+                  />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">Narrower (concepts enfants)</label>
+                  <input
+                    className="form-control form-control-sm"
+                    placeholder="Concepts plus spécifiques (optionnel)"
+                    value={manuelForm.narrower}
+                    onChange={e => setManuelForm({ ...manuelForm, narrower: e.target.value })}
+                  />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label fw-bold">Validé par <span className="text-danger">*</span></label>
+                  <input
+                    className="form-control form-control-sm"
+                    placeholder="Votre nom complet"
+                    value={manuelForm.validated_by}
+                    onChange={e => setManuelForm({ ...manuelForm, validated_by: e.target.value })}
+                  />
+                </div>
+              </div>
+              {manuelError && <div className="alert alert-danger mt-2 py-1">⚠️ {manuelError}</div>}
+              {manuelSuccess && <div className="alert alert-success mt-2 py-1">✅ {manuelSuccess}</div>}
+              <div className="mt-3">
+                <button type="submit" className="btn btn-accent">➕ Créer le concept</button>
+              </div>
+            </form>
+          )}
+        </div>
 
         {/* TABLEAU CONCEPTS VALIDÉS */}
         <div className="section-card mb-3">

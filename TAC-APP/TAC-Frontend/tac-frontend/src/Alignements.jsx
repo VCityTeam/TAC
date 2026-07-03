@@ -381,7 +381,7 @@ function Alignements() {
         <span>TAC — Fondation des Sciences du Patrimoine × LIRIS</span>
         <span>v1.0.0 — 2026</span>
       </footer>
-    </div>
+    </div>     
   )
 }
 

@@ -1,6 +1,7 @@
 # Compte rendu de réunion
 
 **Date :** 18 septembre 2026
+
 **Objet :** Évaluation du fine-tuning (brique 0 et brique ALL) et choix de la méthodologie d'évaluation
 
 ## Contexte

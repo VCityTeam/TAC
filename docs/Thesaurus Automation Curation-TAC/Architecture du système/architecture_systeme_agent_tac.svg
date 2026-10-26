@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1120" viewBox="0 0 1500 1120">
+<style>text{font-family:DejaVu Sans, Verdana, Segoe UI, Arial, sans-serif;text-anchor:middle}.b{font-weight:bold}.s{text-anchor:start}.m{font-family:DejaVu Sans Mono,Consolas,Menlo,monospace}</style><defs><marker id="ah334155" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker><marker id="as334155" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker><marker id="ahC2410C" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C2410C"/></marker><marker id="asC2410C" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C2410C"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<g fill="#1F2937">
+<text x="750" y="46" font-size="26" class="b">Architecture du système TAC</text>
+<rect x="590" y="82" width="320" height="72" rx="10" fill="#FFFFFF" stroke="#1F2937" stroke-width="2.2"/>
+<text x="750" y="114" font-size="18" class="b">Utilisateur</text>
+<text x="750" y="136.5" font-size="14" fill="#475569">documentaliste, spécialiste du patrimoine</text>
+<path d="M750,154 L750,192" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="330" y="196" width="840" height="186" rx="14" fill="#F1F5FC" stroke="#2F5596" stroke-width="2.4"/>
+<path d="M330,246 L330,210 Q330,196 344,196 L1156,196 Q1170,196 1170,210 L1170,246 Z" fill="#2F5596"/>
+<text x="750" y="228" font-size="19" class="b" fill="#FFFFFF">Application web</text>
+<rect x="370" y="266" width="330" height="92" rx="10" fill="#FFFFFF" stroke="#2F5596" stroke-width="2.2"/>
+<text x="535" y="307.6" font-size="17" class="b">Interface utilisateur</text>
+<text x="535" y="329.8" font-size="14" fill="#475569">React · saisie, consultation, correction</text>
+<rect x="800" y="266" width="330" height="92" rx="10" fill="#FFFFFF" stroke="#2F5596" stroke-width="2.2"/>
+<text x="965" y="307.6" font-size="17" class="b">API REST</text>
+<text x="965" y="329.8" font-size="14" fill="#475569">FastAPI · chef d'orchestre</text>
+<path d="M700,312 L800,312" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)" marker-start="url(#as334155)"/>
+<path d="M965,382 L965,412 L420,412 L420,458" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<path d="M965,412 L1030,412 L1030,478" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<path d="M1030,412 L1335,412 L1335,478" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="443.2" y="399.0" width="233.6" height="26" rx="13.0" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="1.8"/>
+<text x="560" y="416.7" font-size="13" class="b" fill="#2E7D4F">requête en langage naturel</text>
+<rect x="1127.7" y="399.0" width="104.6" height="26" rx="13.0" fill="#FFFFFF" stroke="#B45309" stroke-width="1.8"/>
+<text x="1180" y="416.7" font-size="13" class="b" fill="#B45309">validation</text>
+<rect x="40" y="458" width="760" height="452" rx="14" fill="#F0F7F2" stroke="#2E7D4F" stroke-width="2.4"/>
+<path d="M40,508 L40,472 Q40,458 54,458 L786,458 Q800,458 800,472 L800,508 Z" fill="#2E7D4F"/>
+<text x="420" y="490" font-size="19" class="b" fill="#FFFFFF">Agent TAC</text>
+<rect x="215" y="528" width="410" height="80" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2.2"/>
+<text x="420" y="563.6" font-size="17" class="b">LLM orchestrateur</text>
+<text x="420" y="585.8" font-size="14" fill="#475569">analyse la requête et choisit l'outil</text>
+<path d="M420,608 L420,632 L147,632 L147,656" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<path d="M420,632 L329,632 L329,656" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<path d="M420,632 L511,632 L511,656" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<path d="M420,632 L693,632 L693,656" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="65" y="656" width="164" height="104" rx="10" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="2.2"/>
+<text x="147" y="692.8" font-size="16" class="b" fill="#2E7D4F">Outil 1</text>
+<text x="147" y="714.5" font-size="14">génération</text>
+<text x="147" y="735.5" font-size="14">de concepts</text>
+<rect x="247" y="656" width="164" height="104" rx="10" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="2.2"/>
+<text x="329" y="692.8" font-size="16" class="b" fill="#2E7D4F">Outil 2</text>
+<text x="329" y="714.5" font-size="14">rattachement</text>
+<text x="329" y="735.5" font-size="14">aux thésaurus</text>
+<rect x="429" y="656" width="164" height="104" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2.2" stroke-dasharray="8 6"/>
+<text x="511" y="692.8" font-size="16" class="b" fill="#2E7D4F">Outil 3</text>
+<text x="511" y="714.5" font-size="14">alignement</text>
+<text x="511" y="735.5" font-size="14">des thésaurus</text>
+<rect x="611" y="656" width="164" height="104" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2.2" stroke-dasharray="8 6"/>
+<text x="693" y="692.8" font-size="16" class="b" fill="#2E7D4F">Outil 4</text>
+<text x="693" y="714.5" font-size="14">export</text>
+<text x="693" y="735.5" font-size="14">au format SKOS</text>
+<text x="420" y="808" font-size="14" class="b" fill="#475569">Ressources communes des outils</text>
+<rect x="65" y="824" width="164" height="66" rx="8" fill="#D5F5EE" stroke="#0F766E" stroke-width="1.8"/>
+<text x="147" y="853.4" font-size="15" class="b" fill="#0F766E">Qdrant</text>
+<text x="147" y="872.6" font-size="12" fill="#475569">bases vectorielles</text>
+<rect x="247" y="824" width="164" height="66" rx="8" fill="#EDE7FE" stroke="#6D28D9" stroke-width="1.8"/>
+<text x="329" y="853.4" font-size="15" class="b" fill="#6D28D9">Neo4j</text>
+<text x="329" y="872.6" font-size="12" fill="#475569">graphe de connaissances</text>
+<rect x="429" y="824" width="164" height="66" rx="8" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="1.8"/>
+<text x="511" y="853.4" font-size="15" class="b" fill="#2E7D4F">Mistral 7B</text>
+<text x="511" y="872.6" font-size="12" fill="#475569">modèles fine-tunés</text>
+<rect x="611" y="824" width="164" height="66" rx="8" fill="#E3EBF8" stroke="#2F5596" stroke-width="1.8"/>
+<text x="693" y="853.4" font-size="15" class="b" fill="#2F5596">API OpenTheso</text>
+<text x="693" y="872.6" font-size="12" fill="#475569">lecture / écriture</text>
+<path d="M880,494 L880,652 A150.0,16 0 0 0 1180,652 L1180,494" fill="#EDE7FE" stroke="#6D28D9" stroke-width="2.4"/>
+<ellipse cx="1030.0" cy="494" rx="150.0" ry="16" fill="#FFFFFF" stroke="#6D28D9" stroke-width="2.4"/>
+<text x="1030" y="553.4" font-size="15">Base de données graphe</text>
+<text x="1030" y="579.2" font-size="18" class="b" fill="#6D28D9">Neo4j</text>
+<text x="1030" y="600.7" font-size="13" fill="#475569">termes, concepts, thésaurus,</text>
+<text x="1030" y="620.2" font-size="13" fill="#475569">alignements, exports</text>
+<path d="M800,600 L880,600" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="809.4" y="560.0" width="61.2" height="24" rx="12.0" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="1.8"/>
+<text x="840" y="576.3" font-size="12" class="b" fill="#2E7D4F">écrit</text>
+<rect x="1215" y="478" width="245" height="190" rx="10" fill="#FEF3C7" stroke="#B45309" stroke-width="2.2"/>
+<text x="1337.5" y="533.7" font-size="18" class="b" fill="#B45309">Module</text>
+<text x="1337.5" y="560.7" font-size="18" class="b" fill="#B45309">d'évaluation</text>
+<text x="1337.5" y="605.8" font-size="14" fill="#475569">validation humaine</text>
+<text x="1337.5" y="626.8" font-size="14" fill="#475569">+ métriques quantitatives</text>
+<path d="M880,746 L880,864 A150.0,16 0 0 0 1180,864 L1180,746" fill="#FDEBDD" stroke="#C2410C" stroke-width="2.4"/>
+<ellipse cx="1030.0" cy="746" rx="150.0" ry="16" fill="#FFFFFF" stroke="#C2410C" stroke-width="2.4"/>
+<text x="1030" y="799.6" font-size="17" class="b" fill="#C2410C">Thésaurus externes</text>
+<text x="1030" y="820.7" font-size="13" fill="#475569">référentiels de référence</text>
+<text x="1030" y="840.2" font-size="13" fill="#475569">hors du périmètre TAC</text>
+<path d="M511,760 L511,784 L880,784" fill="none" stroke="#C2410C" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#ahC2410C)"/>
+<rect x="640.8" y="772.0" width="98.4" height="24" rx="12.0" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.8"/>
+<text x="690" y="788.3" font-size="12" class="b" fill="#C2410C">alignement</text>
+<rect x="40" y="940" width="1420" height="150" rx="14" fill="#F8F9FB" stroke="#CBD5E1" stroke-width="1.8"/>
+<text x="68" y="978" font-size="18" class="b s">Légende</text>
+<rect x="68" y="1000" width="44" height="28" rx="6" fill="#F1F5FC" stroke="#2F5596" stroke-width="2"/>
+<text x="128" y="1019" font-size="15" class="s">Application web (interface + API)</text>
+<rect x="68" y="1044" width="44" height="28" rx="6" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="2"/>
+<text x="128" y="1063" font-size="15" class="s">Agent TAC et outils développés</text>
+<rect x="538" y="1000" width="44" height="28" rx="6" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="598" y="1019" font-size="15" class="s">Outils à implémenter</text>
+<rect x="538" y="1044" width="44" height="28" rx="6" fill="#EDE7FE" stroke="#6D28D9" stroke-width="2"/>
+<text x="598" y="1063" font-size="15" class="s">Persistance des résultats (Neo4j)</text>
+<rect x="1008" y="1000" width="44" height="28" rx="6" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="1068" y="1019" font-size="15" class="s">Évaluation des résultats</text>
+<rect x="1008" y="1044" width="44" height="28" rx="6" fill="#FDEBDD" stroke="#C2410C" stroke-width="2"/>
+<text x="1068" y="1063" font-size="15" class="s">Ressource externe (alignement)</text>
+</g></svg>

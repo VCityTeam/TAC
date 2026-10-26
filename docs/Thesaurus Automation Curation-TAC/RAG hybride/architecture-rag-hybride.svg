@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1080" viewBox="0 0 1400 1080">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#334155"/></marker></defs>
+<rect width="1400" height="1080" fill="#FFFFFF"/>
+<text x="700.0" y="36" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="bold" fill="#1F2937" text-anchor="middle">Architecture RAG hybride : génération de concepts et rattachement au thésaurus</text>
+<rect x="30" y="66" width="540" height="560" rx="14" fill="#F2F6FC" stroke="#2F5597" stroke-width="2"/>
+<path d="M30 80 A14 14 0 0 1 44 66 H556 A14 14 0 0 1 570 80 V110 H30 Z" fill="#2F5597"/>
+<text x="300.0" y="89" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Phase 1 : Indexation (hors ligne)</text>
+<rect x="150" y="130" width="300" height="80" rx="10" fill="#FFFFFF" stroke="#2F5597" stroke-width="2"/>
+<text x="300.0" y="159.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">API OpenTheso</text>
+<text x="300.0" y="181.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">344 thésaurus · 407 761 concepts</text>
+<path d="M300 210 V246" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="90" y="250" width="420" height="108" rx="10" fill="#FFFFFF" stroke="#2F5597" stroke-width="2"/>
+<text x="300.0" y="280.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Extraction automatique</text>
+<text x="300.0" y="304.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">attributs + relations lues dans les URI SKOS</text>
+<text x="300.0" y="328.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">broader · narrower · appartenance</text>
+<path d="M300 358 V392 H130 V438" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M300 358 V438" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M300 392 H470 V438" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M50 454 A80.0 12 0 0 1 210 454 V580 A80.0 12 0 0 1 50 580 Z" fill="#D5F5EF" stroke="#0F766E" stroke-width="2.5"/>
+<ellipse cx="130.0" cy="454" rx="80.0" ry="12" fill="#FFFFFF" fill-opacity="0.6" stroke="#0F766E" stroke-width="2.5"/>
+<text x="130.0" y="493.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Base vectorielle</text>
+<text x="130.0" y="514.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="#0F766E" text-anchor="middle" dominant-baseline="middle">CONCEPTS</text>
+<text x="130.0" y="535.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">un élément</text>
+<text x="130.0" y="556.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">par concept</text>
+<path d="M220 454 A80.0 12 0 0 1 380 454 V580 A80.0 12 0 0 1 220 580 Z" fill="#FFEBD9" stroke="#C2410C" stroke-width="2.5"/>
+<ellipse cx="300.0" cy="454" rx="80.0" ry="12" fill="#FFFFFF" fill-opacity="0.6" stroke="#C2410C" stroke-width="2.5"/>
+<text x="300.0" y="493.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Base vectorielle</text>
+<text x="300.0" y="514.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="#C2410C" text-anchor="middle" dominant-baseline="middle">THÉSAURUS</text>
+<text x="300.0" y="535.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">un élément</text>
+<text x="300.0" y="556.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">par thésaurus</text>
+<path d="M390 454 A80.0 12 0 0 1 550 454 V580 A80.0 12 0 0 1 390 580 Z" fill="#EEE9FE" stroke="#6D28D9" stroke-width="2.5"/>
+<ellipse cx="470.0" cy="454" rx="80.0" ry="12" fill="#FFFFFF" fill-opacity="0.6" stroke="#6D28D9" stroke-width="2.5"/>
+<text x="470.0" y="493.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Graphe de</text>
+<text x="470.0" y="514.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" font-weight="bold" fill="#6D28D9" text-anchor="middle" dominant-baseline="middle">CONNAISSANCES</text>
+<text x="470.0" y="535.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">BROADER</text>
+<text x="470.0" y="556.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">APPARTIENT</text>
+<rect x="30" y="650" width="540" height="390" rx="14" fill="#FAFAFA" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="54" y="684" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Légende</text>
+<rect x="54" y="712" width="34" height="24" rx="5" fill="#D5F5EF" stroke="#0F766E" stroke-width="2.2"/>
+<text x="102" y="725" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" fill="#1F2937" dominant-baseline="middle">Base vectorielle CONCEPTS (Qdrant)</text>
+<rect x="54" y="752" width="34" height="24" rx="5" fill="#FFEBD9" stroke="#C2410C" stroke-width="2.2"/>
+<text x="102" y="765" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" fill="#1F2937" dominant-baseline="middle">Base vectorielle THÉSAURUS (Qdrant)</text>
+<rect x="54" y="792" width="34" height="24" rx="5" fill="#EEE9FE" stroke="#6D28D9" stroke-width="2.2"/>
+<text x="102" y="805" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" fill="#1F2937" dominant-baseline="middle">Graphe de connaissances (Neo4j)</text>
+<rect x="54" y="832" width="34" height="24" rx="5" fill="#FEF3C7" stroke="#B45309" stroke-width="2.2"/>
+<text x="102" y="845" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" fill="#1F2937" dominant-baseline="middle">Aiguillage selon le type de demande</text>
+<text x="54" y="892" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569">Chaque étape de la phase 2 reprend la couleur</text>
+<text x="54" y="914" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569">de la base qu'elle interroge.</text>
+<text x="54" y="936" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569"/>
+<text x="54" y="958" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569">Les attributs sont dans les bases vectorielles,</text>
+<text x="54" y="980" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569">les relations dans le graphe. Le lien entre les</text>
+<text x="54" y="1002" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569">deux est l'identifiant id_concept.</text>
+<rect x="600" y="66" width="770" height="974" rx="14" fill="#F1F8F3" stroke="#2E7D4F" stroke-width="2"/>
+<path d="M600 80 A14 14 0 0 1 614 66 H1356 A14 14 0 0 1 1370 80 V110 H600 Z" fill="#2E7D4F"/>
+<text x="985.0" y="89" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Phase 2 : Interrogation (en ligne)</text>
+<rect x="835" y="130" width="300" height="70" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2"/>
+<text x="985.0" y="154.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Requête utilisateur</text>
+<text x="985.0" y="176.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">texte libre</text>
+<path d="M985 200 V236" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<polygon points="985,240 1145,305 985,370 825,305" fill="#FEF3C7" stroke="#B45309" stroke-width="2.5"/>
+<text x="985" y="293.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" font-weight="bold" fill="#B45309" text-anchor="middle" dominant-baseline="middle">Aiguillage</text>
+<text x="985" y="317.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">type de demande ?</text>
+<path d="M825 305 H765 V448" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M1145 305 H1205 V448" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="665.3" y="382" width="199.4" height="26" rx="13" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6"/>
+<text x="765" y="395" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#0F766E" text-anchor="middle" dominant-baseline="middle">Génération d'un concept</text>
+<rect x="1097.5" y="382" width="215.0" height="26" rx="13" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.6"/>
+<text x="1205" y="395" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#C2410C" text-anchor="middle" dominant-baseline="middle">Rattachement au thésaurus</text>
+<rect x="625" y="452" width="280" height="116" rx="10" fill="#D5F5EF" stroke="#0F766E" stroke-width="2.5"/>
+<text x="765.0" y="477.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" font-weight="bold" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Recherche vectorielle</text>
+<text x="765.0" y="499.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">concepts proches</text>
+<text x="765.0" y="521.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">+ reranker</text>
+<text x="765.0" y="543.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#0F766E" text-anchor="middle" dominant-baseline="middle">lit : base CONCEPTS</text>
+<rect x="1065" y="452" width="280" height="116" rx="10" fill="#FFEBD9" stroke="#C2410C" stroke-width="2.5"/>
+<text x="1205.0" y="477.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" font-weight="bold" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Recherche vectorielle</text>
+<text x="1205.0" y="499.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">thésaurus proches</text>
+<text x="1205.0" y="521.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">similarité + vote</text>
+<text x="1205.0" y="543.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#C2410C" text-anchor="middle" dominant-baseline="middle">lit : base THÉSAURUS</text>
+<path d="M765 568 V620 H905 V656" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M1205 568 V620 H1065 V656" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="746.0" y="607" width="98.0" height="26" rx="13" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6"/>
+<text x="795" y="620" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#0F766E" text-anchor="middle" dominant-baseline="middle">id_concept</text>
+<rect x="1133.8" y="607" width="82.4" height="26" rx="13" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.6"/>
+<text x="1175" y="620" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#C2410C" text-anchor="middle" dominant-baseline="middle">id_theso</text>
+<rect x="795" y="660" width="380" height="128" rx="10" fill="#EEE9FE" stroke="#6D28D9" stroke-width="2.5"/>
+<text x="985.0" y="686.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" font-weight="bold" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Parcours du graphe</text>
+<text x="985.0" y="711.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="normal" fill="#475569" text-anchor="middle" dominant-baseline="middle">broader · narrower · appartenance</text>
+<text x="985.0" y="736.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#6D28D9" text-anchor="middle" dominant-baseline="middle">lit : graphe de connaissances</text>
+<text x="985.0" y="761.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#0F766E" text-anchor="middle" dominant-baseline="middle">+ attributs des voisins : base CONCEPTS</text>
+<path d="M985 788 V816" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="865" y="820" width="240" height="50" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2"/>
+<text x="985.0" y="845.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Contexte</text>
+<path d="M985 870 V891" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="865" y="895" width="240" height="50" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2"/>
+<text x="985.0" y="920.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="#1F2937" text-anchor="middle" dominant-baseline="middle">Modèle de langage</text>
+<path d="M985 945 V966" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="865" y="970" width="240" height="50" rx="10" fill="#2E7D4F" stroke="#2E7D4F" stroke-width="2"/>
+<text x="985.0" y="995.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Réponse</text>
+</svg>

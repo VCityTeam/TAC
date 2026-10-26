@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="960" viewBox="0 0 1300 960">
+<style>text{font-family:DejaVu Sans, Verdana, Segoe UI, Arial, sans-serif;text-anchor:middle}.b{font-weight:bold}.s{text-anchor:start}.m{font-family:DejaVu Sans Mono,Consolas,Menlo,monospace}</style><defs><marker id="ahC2410C" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C2410C"/></marker><marker id="asC2410C" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C2410C"/></marker><marker id="ah2E7D4F" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2E7D4F"/></marker><marker id="as2E7D4F" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2E7D4F"/></marker><marker id="ah334155" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker><marker id="as334155" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<g fill="#1F2937">
+<text x="650" y="46" font-size="26" class="b">Boucle de validation humaine</text>
+<rect x="470" y="86" width="360" height="74" rx="10" fill="#E3EBF8" stroke="#2F5596" stroke-width="2.2"/>
+<text x="650" y="119.7" font-size="18" class="b" fill="#2F5596">Objet α</text>
+<text x="650" y="141.2" font-size="13" fill="#475569">α ∈ {terme, concept, thésaurus, alignement, SKOS}</text>
+<path d="M650,160 L650,206" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="470" y="206" width="360" height="84" rx="10" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="2.2"/>
+<text x="650" y="234.3" font-size="16" class="b" fill="#2E7D4F">1. Traitement par l'agent TAC</text>
+<text x="650" y="254.9" font-size="13" fill="#475569">l'agent appelle l'outil adapté</text>
+<text x="650" y="274.4" font-size="13" fill="#475569">et produit un résultat</text>
+<path d="M650,290 L650,336" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="470" y="336" width="360" height="64" rx="10" fill="#FFFFFF" stroke="#2F5596" stroke-width="2.2"/>
+<text x="650" y="373.8" font-size="16" class="b" fill="#2F5596">Résultat proposé</text>
+<path d="M650,400 L650,428" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<polygon points="650,430.0 850.0,520 650,610.0 450.0,520" fill="#FEF3C7" stroke="#B45309" stroke-width="2.4"/>
+<text x="650" y="506.3" font-size="16" class="b" fill="#B45309">2. Validation humaine</text>
+<text x="650" y="526.9" font-size="13" fill="#475569">le spécialiste examine</text>
+<text x="650" y="546.4" font-size="13" fill="#475569">et se prononce</text>
+<path d="M850,520 L930,520" fill="none" stroke="#2E7D4F" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah2E7D4F)"/>
+<rect x="855.7" y="482.0" width="68.6" height="24" rx="12.0" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="1.8"/>
+<text x="890" y="498.3" font-size="12" class="b" fill="#2E7D4F">validé</text>
+<rect x="930" y="480" width="330" height="80" rx="10" fill="#2E7D4F" stroke="#2E7D4F" stroke-width="2.2"/>
+<text x="1095" y="516.4" font-size="17" class="b" fill="#FFFFFF">3a. α validé</text>
+<text x="1095" y="537.4" font-size="13" fill="#FFFFFF">poursuit son parcours</text>
+<path d="M1095,560 L1095,620" fill="none" stroke="#2E7D4F" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah2E7D4F)"/>
+<rect x="930" y="620" width="330" height="74" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2.2"/>
+<text x="1095" y="653" font-size="16" class="b" fill="#2E7D4F">Étape suivante</text>
+<text x="1095" y="673.7" font-size="13" fill="#475569">α validé sert d'entrée</text>
+<path d="M450,520 L370,520" fill="none" stroke="#C2410C" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ahC2410C)"/>
+<rect x="375.7" y="482.0" width="68.6" height="24" rx="12.0" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.8"/>
+<text x="410" y="498.3" font-size="12" class="b" fill="#C2410C">rejeté</text>
+<rect x="40" y="480" width="330" height="80" rx="10" fill="#FDEBDD" stroke="#C2410C" stroke-width="2.2"/>
+<text x="205" y="516.4" font-size="17" class="b" fill="#C2410C">3b. Rejet</text>
+<text x="205" y="537.4" font-size="13" fill="#475569">motif et numéro d'itération conservés</text>
+<path d="M205,480 L205,290" fill="none" stroke="#C2410C" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ahC2410C)"/>
+<rect x="40" y="206" width="330" height="84" rx="10" fill="#FFFFFF" stroke="#C2410C" stroke-width="2.2"/>
+<text x="205" y="234.3" font-size="16" class="b" fill="#C2410C">Correction du pipeline</text>
+<text x="205" y="254.9" font-size="13" fill="#475569">ajustement du prompt</text>
+<text x="205" y="274.4" font-size="13" fill="#475569">ou des paramètres</text>
+<path d="M370,248 L470,248" fill="none" stroke="#C2410C" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ahC2410C)"/>
+<rect x="382.0" y="210.0" width="76.1" height="24" rx="12.0" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.8"/>
+<text x="420" y="226.3" font-size="12" class="b" fill="#C2410C">relance</text>
+<text x="222" y="400" font-size="13" class="s" fill="#475569">même objet α,</text>
+<text x="222" y="420" font-size="13" class="s" fill="#475569">sans repartir de zéro</text>
+<rect x="40" y="740" width="1220" height="190" rx="14" fill="#F8F9FB" stroke="#CBD5E1" stroke-width="1.8"/>
+<text x="68" y="778" font-size="18" class="b s">Traçabilité : chaque passage dans la boucle est journalisé</text>
+<rect x="68" y="800" width="40" height="26" rx="6" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="2"/>
+<text x="124" y="818" font-size="15" class="b s">Traitement par l'agent TAC</text>
+<text x="420" y="818" font-size="15" class="s" fill="#475569">model_id, prompt_id, numéro d'itération</text>
+<rect x="68" y="840" width="40" height="26" rx="6" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="124" y="858" font-size="15" class="b s">Validation</text>
+<text x="420" y="858" font-size="15" class="s" fill="#475569">user_id, horodatage, numéro d'itération</text>
+<rect x="68" y="880" width="40" height="26" rx="6" fill="#FDEBDD" stroke="#C2410C" stroke-width="2"/>
+<text x="124" y="898" font-size="15" class="b s">Rejet</text>
+<text x="420" y="898" font-size="15" class="s" fill="#475569">motif, numéro d'itération</text>
+</g></svg>

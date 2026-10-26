@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="1080" viewBox="0 0 1260 1080">
+<style>text{font-family:DejaVu Sans, Verdana, Segoe UI, Arial, sans-serif;text-anchor:middle}.b{font-weight:bold}.s{text-anchor:start}.m{font-family:DejaVu Sans Mono,Consolas,Menlo,monospace}</style><defs><marker id="ah334155" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker><marker id="as334155" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker><marker id="ahB45309" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="asB45309" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B45309"/></marker><marker id="ah475569" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><marker id="as475569" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<g fill="#1F2937">
+<text x="630" y="46" font-size="26" class="b">Chaîne de traitement de l'agent TAC</text>
+<rect x="230" y="90" width="400" height="70" rx="10" fill="#E3EBF8" stroke="#2F5596" stroke-width="2.2"/>
+<text x="430" y="121.4" font-size="17" class="b" fill="#2F5596">Terme</text>
+<text x="430" y="142.4" font-size="13" fill="#475569">saisi ou importé par l'utilisateur</text>
+<path d="M430.0,160 L430.0,196" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="230" y="196" width="400" height="80" rx="10" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="2.2"/>
+<text x="430" y="232" font-size="16" class="b" fill="#2E7D4F">Outil 1 · génération de concepts</text>
+<text x="430" y="252.7" font-size="13" fill="#475569">RAG hybride + Mistral 7B fine-tuné</text>
+<path d="M430.0,276 L430.0,316" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="230" y="316" width="400" height="70" rx="10" fill="#E3EBF8" stroke="#2F5596" stroke-width="2.2"/>
+<text x="430" y="347.4" font-size="17" class="b" fill="#2F5596">Concepts</text>
+<text x="430" y="368.4" font-size="13" fill="#475569">prefLabel · altLabel · définition · broader · narrower</text>
+<rect x="30" y="316" width="170" height="70" rx="10" fill="#FFFFFF" stroke="#475569" stroke-width="1.6" stroke-dasharray="8 6"/>
+<text x="115" y="346.7" font-size="13" class="b">Entrée directe</text>
+<text x="115" y="365.1" font-size="12" fill="#475569">concept saisi</text>
+<path d="M200,351 L230,351" fill="none" stroke="#475569" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#ah475569)"/>
+<path d="M430.0,386 L430.0,422" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="230" y="422" width="400" height="80" rx="10" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="2.2"/>
+<text x="430" y="458" font-size="16" class="b" fill="#2E7D4F">Outil 2 · rattachement aux thésaurus</text>
+<text x="430" y="478.7" font-size="13" fill="#475569">RAG hybride + Mistral 7B fine-tuné</text>
+<path d="M430.0,502 L430.0,542" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="230" y="542" width="400" height="70" rx="10" fill="#E3EBF8" stroke="#2F5596" stroke-width="2.2"/>
+<text x="430" y="573.4" font-size="17" class="b" fill="#2F5596">Thésaurus</text>
+<text x="430" y="594.4" font-size="13" fill="#475569">concepts rattachés et structurés</text>
+<rect x="30" y="542" width="170" height="70" rx="10" fill="#FFFFFF" stroke="#475569" stroke-width="1.6" stroke-dasharray="8 6"/>
+<text x="115" y="572.7" font-size="13" class="b">Entrée directe</text>
+<text x="115" y="591.1" font-size="12" fill="#475569">thésaurus existant</text>
+<path d="M200,577 L230,577" fill="none" stroke="#475569" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#ah475569)"/>
+<path d="M430.0,612 L430.0,642 L250.0,642 L250.0,680" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<path d="M430.0,642 L610.0,642 L610.0,680" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="100" y="680" width="300" height="80" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2.2" stroke-dasharray="8 6"/>
+<text x="250" y="716" font-size="16" class="b" fill="#2E7D4F">Outil 4 · export SKOS</text>
+<text x="250" y="736.7" font-size="13" fill="#475569">format normalisé du W3C</text>
+<rect x="460" y="680" width="300" height="80" rx="10" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2.2" stroke-dasharray="8 6"/>
+<text x="610" y="716" font-size="16" class="b" fill="#2E7D4F">Outil 3 · alignement</text>
+<text x="610" y="736.7" font-size="13" fill="#475569">vers des thésaurus externes</text>
+<path d="M250.0,760 L250.0,800" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<path d="M610.0,760 L610.0,800" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="100" y="800" width="300" height="70" rx="10" fill="#E3EBF8" stroke="#2F5596" stroke-width="2.2"/>
+<text x="250" y="831.4" font-size="17" class="b" fill="#2F5596">Fichier SKOS</text>
+<text x="250" y="852.4" font-size="13" fill="#475569">RDF, versable dans OpenTheso</text>
+<rect x="460" y="800" width="300" height="70" rx="10" fill="#E3EBF8" stroke="#2F5596" stroke-width="2.2"/>
+<text x="610" y="831.4" font-size="17" class="b" fill="#2F5596">Correspondances</text>
+<text x="610" y="852.4" font-size="13" fill="#475569">skos:exactMatch, closeMatch…</text>
+<rect x="900" y="290" width="320" height="600" rx="14" fill="#FFFBEB" stroke="#B45309" stroke-width="2.4"/>
+<path d="M900,340 L900,304 Q900,290 914,290 L1206,290 Q1220,290 1220,304 L1220,340 Z" fill="#B45309"/>
+<text x="1060" y="322" font-size="19" class="b" fill="#FFFFFF">Module d'évaluation</text>
+<text x="1060" y="540.5" font-size="16" class="b" fill="#B45309">validation humaine</text>
+<text x="1060" y="562.3" font-size="14" fill="#475569">le spécialiste accepte</text>
+<text x="1060" y="583.3" font-size="14" fill="#475569">ou corrige le résultat</text>
+<text x="1060" y="629" font-size="16" class="b" fill="#B45309">métriques quantitatives</text>
+<text x="1060" y="650.8" font-size="14" fill="#475569">similarité cosinus, P / R / F1</text>
+<text x="1060" y="671.8" font-size="14" fill="#475569">crisp et soft</text>
+<path d="M630,351 L900,351" fill="none" stroke="#B45309" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#ahB45309)"/>
+<rect x="723.2" y="321.0" width="83.5" height="24" rx="12.0" fill="#FFFFFF" stroke="#B45309" stroke-width="1.8"/>
+<text x="765" y="337.3" font-size="12" class="b" fill="#B45309">concepts</text>
+<path d="M630,577 L900,577" fill="none" stroke="#B45309" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#ahB45309)"/>
+<rect x="719.5" y="547.0" width="91.0" height="24" rx="12.0" fill="#FFFFFF" stroke="#B45309" stroke-width="1.8"/>
+<text x="765" y="563.3" font-size="12" class="b" fill="#B45309">thésaurus</text>
+<path d="M760,835 L900,835" fill="none" stroke="#B45309" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#ahB45309)"/>
+<rect x="762.2" y="845.0" width="135.6" height="24" rx="12.0" fill="#FFFFFF" stroke="#B45309" stroke-width="1.8"/>
+<text x="830" y="861.3" font-size="12" class="b" fill="#B45309">correspondances</text>
+<rect x="30" y="930" width="1190" height="124" rx="14" fill="#F8F9FB" stroke="#CBD5E1" stroke-width="1.8"/>
+<text x="58" y="966" font-size="18" class="b s">Légende</text>
+<rect x="58" y="984" width="40" height="24" rx="6" fill="#E3EBF8" stroke="#2F5596" stroke-width="2"/>
+<text x="112" y="1001" font-size="14" class="s">Donnée d'entrée ou de sortie</text>
+<rect x="58" y="1020" width="40" height="24" rx="6" fill="#DDF0E3" stroke="#2E7D4F" stroke-width="2"/>
+<text x="112" y="1037" font-size="14" class="s">Outil de l'agent TAC (développé)</text>
+<rect x="448" y="984" width="40" height="24" rx="6" fill="#FFFFFF" stroke="#2E7D4F" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="502" y="1001" font-size="14" class="s">Outil à implémenter</text>
+<rect x="448" y="1020" width="40" height="24" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="502" y="1037" font-size="14" class="s">Point d'entrée direct (facultatif)</text>
+<rect x="838" y="984" width="40" height="24" rx="6" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="892" y="1001" font-size="14" class="s">Évaluation de chaque sortie</text>
+</g></svg>

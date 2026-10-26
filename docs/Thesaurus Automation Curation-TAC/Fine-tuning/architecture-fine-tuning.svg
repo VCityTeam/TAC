@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1190" viewBox="0 0 1400 1190">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#334155"/></marker></defs>
+<rect width="1400" height="1190" fill="#FFFFFF"/>
+<text x="700.0" y="48" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" fill="#1F2937" text-anchor="middle" font-weight="bold">Architecture du fine-tuning : génération de concepts et rattachement au thésaurus</text>
+<rect x="30" y="80" width="610" height="995" rx="14" fill="#F2F6FC" stroke="#2F5597" stroke-width="2"/>
+<path d="M30 94 A14 14 0 0 1 44 80 L626 80 A14 14 0 0 1 640 94 L640 126 L30 126 Z" fill="#2F5597"/>
+<text x="335.0" y="110" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" fill="#FFFFFF" text-anchor="middle" font-weight="bold">Phase 1 : Préparation des données</text>
+<rect x="700" y="80" width="670" height="995" rx="14" fill="#F1F8F3" stroke="#2E7D4F" stroke-width="2"/>
+<path d="M700 94 A14 14 0 0 1 714 80 L1356 80 A14 14 0 0 1 1370 94 L1370 126 L700 126 Z" fill="#2E7D4F"/>
+<text x="1035.0" y="110" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" fill="#FFFFFF" text-anchor="middle" font-weight="bold">Phase 2 : Affinage et évaluation</text>
+<rect x="90" y="150" width="310" height="72" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="245.0" y="181.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" fill="#1F2937" text-anchor="middle" font-weight="bold">API Opentheso</text>
+<text x="245.0" y="203.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">extraction des thésaurus et des concepts</text>
+<path d="M245 222 L245 250" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M85.0 264 L85.0 338 A160.0 12 0 0 0 405.0 338 L405.0 264" fill="#D5F5EF" stroke="#0F766E" stroke-width="2"/>
+<ellipse cx="245" cy="264" rx="160.0" ry="12" fill="#D5F5EF" stroke="#0F766E" stroke-width="2"/>
+<text x="245" y="295.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#1F2937" text-anchor="middle" font-weight="bold">Corpus JSON</text>
+<text x="245" y="317.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">concepts SKOS : prefLabel, altLabel,</text>
+<text x="245" y="336.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">definition, broader, narrower</text>
+<path d="M245 350 L245 383" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="60" y="385" width="370" height="92" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="245.0" y="417.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" fill="#1F2937" text-anchor="middle" font-weight="bold">Paires question / réponse</text>
+<text x="245.0" y="439.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">prompts par briques : niveaux 0 à 4 et ALL</text>
+<text x="245.0" y="458.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">réponse attendue invariable, close par ### FIN</text>
+<path d="M245 477 L245 513" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="60" y="515" width="370" height="92" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="245.0" y="547.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" fill="#1F2937" text-anchor="middle" font-weight="bold">Découpage stratifié</text>
+<text x="245.0" y="569.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">par thésaurus, en trois ensembles :</text>
+<text x="245.0" y="588.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">entraînement · validation · test</text>
+<path d="M430 561 L448 561" fill="none" stroke="#334155" stroke-width="2.2"/>
+<path d="M448 300 L448 640" fill="none" stroke="#334155" stroke-width="2.2"/>
+<path d="M448 300 L463 300" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M448 470 L463 470" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M448 640 L463 640" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M465.0 267 L465.0 335 A80.0 12 0 0 0 625.0 335 L625.0 267" fill="#FFEBD9" stroke="#C2410C" stroke-width="2"/>
+<ellipse cx="545" cy="267" rx="80.0" ry="12" fill="#FFEBD9" stroke="#C2410C" stroke-width="2"/>
+<text x="545" y="295.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#1F2937" text-anchor="middle" font-weight="bold">Jeu 1</text>
+<text x="545" y="317.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">concepts</text>
+<text x="545" y="336.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">(génération)</text>
+<path d="M465.0 437 L465.0 505 A80.0 12 0 0 0 625.0 505 L625.0 437" fill="#EEE9FE" stroke="#6D28D9" stroke-width="2"/>
+<ellipse cx="545" cy="437" rx="80.0" ry="12" fill="#EEE9FE" stroke="#6D28D9" stroke-width="2"/>
+<text x="545" y="465.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#1F2937" text-anchor="middle" font-weight="bold">Jeu 2</text>
+<text x="545" y="487.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">thésaurus</text>
+<text x="545" y="506.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">(rattachement)</text>
+<path d="M465.0 607 L465.0 675 A80.0 12 0 0 0 625.0 675 L625.0 607" fill="#F1F5F9" stroke="#475569" stroke-width="2"/>
+<ellipse cx="545" cy="607" rx="80.0" ry="12" fill="#F1F5F9" stroke="#475569" stroke-width="2"/>
+<text x="545" y="635.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#1F2937" text-anchor="middle" font-weight="bold">Jeu de test</text>
+<text x="545" y="657.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">réservé, jamais</text>
+<text x="545" y="676.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">vu à l'entraînement</text>
+<rect x="60" y="730" width="565" height="132" rx="10" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/>
+<text x="342.5" y="763.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#1F2937" text-anchor="middle" font-weight="bold">Composition des prompts (section 3)</text>
+<text x="342.5" y="785.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">brique obligatoire : DEMANDE</text>
+<text x="342.5" y="804.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">briques optionnelles : RÔLE, CADRE, MÉTHODE, CONTRAINTES,</text>
+<text x="342.5" y="823.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">FORMAT, EXEMPLES</text>
+<text x="342.5" y="842.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">niveau 0 : DEMANDE seule ; niveaux 1 à 4 : + 1 à 4 briques ; ALL : mélange</text>
+<rect x="730" y="148" width="610" height="40" rx="20" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+<text x="1035" y="174" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" fill="#334155" text-anchor="middle" font-weight="bold">3 LLM de base comparés : Llama-3.1-8B · Mistral-7B · Qwen2.5-7B</text>
+<rect x="730" y="235" width="420" height="130" rx="10" fill="#FFFFFF" stroke="#C2410C" stroke-width="2"/>
+<text x="940.0" y="267.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" fill="#1F2937" text-anchor="middle" font-weight="bold">Modèle affiné n°1</text>
+<text x="940.0" y="289.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">génération de concepts</text>
+<text x="940.0" y="308.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">adaptateur LoRA (Unsloth)</text>
+<text x="940.0" y="327.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">sortie : prefLabel, altLabel, definition,</text>
+<text x="940.0" y="346.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">broader, narrower</text>
+<rect x="730" y="405" width="420" height="130" rx="10" fill="#FFFFFF" stroke="#6D28D9" stroke-width="2"/>
+<text x="940.0" y="446.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" fill="#1F2937" text-anchor="middle" font-weight="bold">Modèle affiné n°2</text>
+<text x="940.0" y="468.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">rattachement au thésaurus</text>
+<text x="940.0" y="487.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">adaptateur LoRA (Unsloth)</text>
+<text x="940.0" y="506.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">sortie : libellé exact du thésaurus</text>
+<path d="M625 300 L728 300" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M625 470 L728 470" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M1150 300 L1210 300 L1210 598" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M1150 470 L1210 470" fill="none" stroke="#334155" stroke-width="2.2"/>
+<rect x="1080" y="600" width="260" height="80" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="1210.0" y="626.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" fill="#1F2937" text-anchor="middle" font-weight="bold">Test</text>
+<text x="1210.0" y="648.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">inférence des deux modèles</text>
+<text x="1210.0" y="667.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">sur le jeu réservé</text>
+<path d="M625 640 L1078 640" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M1210 680 L1210 728" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M1210 705 L870 705 L870 728" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<rect x="730" y="730" width="280" height="100" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="870.0" y="766.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" fill="#1F2937" text-anchor="middle" font-weight="bold">Métriques automatiques</text>
+<text x="870.0" y="788.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">similarité cosinus (bge-m3)</text>
+<text x="870.0" y="807.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">P / R / F1 crisp et soft</text>
+<rect x="1080" y="730" width="260" height="100" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="1210.0" y="766.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" fill="#1F2937" text-anchor="middle" font-weight="bold">Jugement du spécialiste</text>
+<text x="1210.0" y="788.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">pertinence des définitions</text>
+<text x="1210.0" y="807.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="middle">et des relations</text>
+<path d="M870 830 L870 850 L1040 850 L1040 868" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<path d="M1210 830 L1210 850 L1040 850" fill="none" stroke="#334155" stroke-width="2.2"/>
+<path d="M1040 870 L1190 925 L1040 980 L890 925 Z" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+<text x="1040" y="920" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" fill="#1F2937" text-anchor="middle" font-weight="bold">Résultats</text>
+<text x="1040" y="940" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" fill="#1F2937" text-anchor="middle" font-weight="bold">satisfaisants ?</text>
+<path d="M1040 980 L1040 1003" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<text x="1056" y="997" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#2E7D4F" text-anchor="start" font-weight="bold">oui</text>
+<rect x="890" y="1005" width="300" height="56" rx="10" fill="#2E7D4F" stroke="#2E7D4F" stroke-width="2"/>
+<text x="1040" y="1029" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#FFFFFF" text-anchor="middle" font-weight="bold">Modèles affinés retenus</text>
+<text x="1040" y="1049" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle">comparaison des 3 LLM et des niveaux</text>
+<path d="M890 925 L45 925 L45 431 L58 431" fill="none" stroke="#334155" stroke-width="2.2" stroke-dasharray="7 6" marker-end="url(#ah)"/>
+<rect x="705.0" y="912" width="170" height="26" rx="13" fill="#FFFFFF" stroke="#B45309" stroke-width="1.5"/>
+<text x="790" y="929.5" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#B45309" text-anchor="middle" font-weight="bold">non : ajustement</text>
+<text x="330" y="915" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" fill="#475569" text-anchor="middle">reformulation des questions, correction des réponses,</text>
+<text x="330" y="945" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" fill="#475569" text-anchor="middle">révision du découpage (sur le jeu de validation)</text>
+<rect x="30" y="1095" width="1340" height="72" rx="10" fill="#FAFAFA" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="50" y="1137" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" fill="#1F2937" text-anchor="start" font-weight="bold">Légende</text>
+<rect x="135" y="1121" width="30" height="22" rx="5" fill="#FFFFFF" stroke="#334155" stroke-width="1.8"/>
+<text x="173" y="1137" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#334155" text-anchor="start">étape de traitement</text>
+<path d="M330 1122 L330 1146 A14 5 0 0 0 358 1146 L358 1122" fill="#D5F5EF" stroke="#0F766E" stroke-width="1.8"/>
+<ellipse cx="344" cy="1122" rx="14" ry="5" fill="#D5F5EF" stroke="#0F766E" stroke-width="1.8"/>
+<text x="366" y="1141" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#334155" text-anchor="start">corpus source</text>
+<path d="M470 1122 L470 1146 A14 5 0 0 0 498 1146 L498 1122" fill="#FFEBD9" stroke="#C2410C" stroke-width="1.8"/>
+<ellipse cx="484" cy="1122" rx="14" ry="5" fill="#FFEBD9" stroke="#C2410C" stroke-width="1.8"/>
+<text x="506" y="1141" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#334155" text-anchor="start">jeu génération</text>
+<path d="M615 1122 L615 1146 A14 5 0 0 0 643 1146 L643 1122" fill="#EEE9FE" stroke="#6D28D9" stroke-width="1.8"/>
+<ellipse cx="629" cy="1122" rx="14" ry="5" fill="#EEE9FE" stroke="#6D28D9" stroke-width="1.8"/>
+<text x="651" y="1141" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#334155" text-anchor="start">jeu rattachement</text>
+<path d="M780 1122 L780 1146 A14 5 0 0 0 808 1146 L808 1122" fill="#F1F5F9" stroke="#475569" stroke-width="1.8"/>
+<ellipse cx="794" cy="1122" rx="14" ry="5" fill="#F1F5F9" stroke="#475569" stroke-width="1.8"/>
+<text x="816" y="1141" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#334155" text-anchor="start">jeu de test</text>
+<path d="M925 1120 L941 1132 L925 1144 L909 1132 Z" fill="#FEF3C7" stroke="#B45309" stroke-width="1.8"/>
+<text x="949" y="1137" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#334155" text-anchor="start">décision</text>
+<path d="M1035 1132 L1075 1132" fill="none" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+<text x="1083" y="1137" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#334155" text-anchor="start">flux</text>
+<path d="M1135 1132 L1175 1132" fill="none" stroke="#334155" stroke-width="2.2" stroke-dasharray="7 6" marker-end="url(#ah)"/>
+<text x="1183" y="1137" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" fill="#334155" text-anchor="start">boucle d'ajustement</text>
+</svg>

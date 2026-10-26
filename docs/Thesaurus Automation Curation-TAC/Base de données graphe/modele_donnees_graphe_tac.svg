@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900">
+<style>text{font-family:DejaVu Sans, Verdana, Segoe UI, Arial, sans-serif;text-anchor:middle}.b{font-weight:bold}.s{text-anchor:start}.m{font-family:DejaVu Sans Mono,Consolas,Menlo,monospace}</style><defs><marker id="ah334155" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker><marker id="as334155" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<g fill="#1F2937">
+<text x="750" y="46" font-size="26" class="b">Modèle de données du graphe TAC</text>
+<rect x="40" y="110" width="260" height="124" rx="10" fill="#FFFFFF" stroke="#2F5596" stroke-width="2.4"/>
+<path d="M40,156 L40,120 Q40,110 50,110 L290,110 Q300,110 300,120 L300,156 Z" fill="#2F5596"/>
+<text x="170" y="140" font-size="17" class="b" fill="#FFFFFF">TERME</text>
+<rect x="42" y="164" width="256" height="32" fill="#E3EBF8"/>
+<text x="58" y="185" class="m s" font-size="14">id</text>
+<text x="58" y="217" class="m s" font-size="14">libellé</text>
+<rect x="430" y="110" width="280" height="156" rx="10" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.4"/>
+<path d="M430,156 L430,120 Q430,110 440,110 L700,110 Q710,110 710,120 L710,156 Z" fill="#0F766E"/>
+<text x="570" y="140" font-size="17" class="b" fill="#FFFFFF">CONCEPT</text>
+<rect x="432" y="164" width="276" height="32" fill="#D5F5EE"/>
+<text x="448" y="185" class="m s" font-size="14">id</text>
+<text x="448" y="217" class="m s" font-size="14">définition</text>
+<rect x="432" y="228" width="276" height="32" fill="#D5F5EE"/>
+<text x="448" y="249" class="m s" font-size="14">synonymes</text>
+<rect x="860" y="110" width="300" height="188" rx="10" fill="#FFFFFF" stroke="#6D28D9" stroke-width="2.4"/>
+<path d="M860,156 L860,120 Q860,110 870,110 L1150,110 Q1160,110 1160,120 L1160,156 Z" fill="#6D28D9"/>
+<text x="1010" y="140" font-size="17" class="b" fill="#FFFFFF">THÉSAURUS</text>
+<rect x="862" y="164" width="296" height="32" fill="#EDE7FE"/>
+<text x="878" y="185" class="m s" font-size="14">id</text>
+<text x="878" y="217" class="m s" font-size="14">titre</text>
+<rect x="862" y="228" width="296" height="32" fill="#EDE7FE"/>
+<text x="878" y="249" class="m s" font-size="14">langues</text>
+<text x="878" y="281" class="m s" font-size="14">nombre_de_concepts</text>
+<rect x="430" y="500" width="280" height="156" rx="10" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.4" stroke-dasharray="9 6"/>
+<path d="M430,546 L430,510 Q430,500 440,500 L700,500 Q710,500 710,510 L710,546 Z" fill="#0F766E"/>
+<text x="570" y="530" font-size="17" class="b" fill="#FFFFFF">CONCEPT_LIÉ</text>
+<rect x="432" y="554" width="276" height="32" fill="#D5F5EE"/>
+<text x="448" y="575" class="m s" font-size="14">id</text>
+<text x="448" y="607" class="m s" font-size="14">définition</text>
+<rect x="432" y="618" width="276" height="32" fill="#D5F5EE"/>
+<text x="448" y="639" class="m s" font-size="14">synonymes</text>
+<text x="570" y="678" font-size="13" fill="#475569">même objet CONCEPT, représenté une 2e fois</text>
+<rect x="860" y="470" width="300" height="252" rx="10" fill="#FFFFFF" stroke="#B45309" stroke-width="2.4"/>
+<path d="M860,516 L860,480 Q860,470 870,470 L1150,470 Q1160,470 1160,480 L1160,516 Z" fill="#B45309"/>
+<text x="1010" y="500" font-size="17" class="b" fill="#FFFFFF">EXPORT</text>
+<rect x="862" y="524" width="296" height="32" fill="#FEF3C7"/>
+<text x="878" y="545" class="m s" font-size="14">id</text>
+<text x="878" y="577" class="m s" font-size="14">prefLabel</text>
+<rect x="862" y="588" width="296" height="32" fill="#FEF3C7"/>
+<text x="878" y="609" class="m s" font-size="14">altLabel</text>
+<text x="878" y="641" class="m s" font-size="14">definition</text>
+<rect x="862" y="652" width="296" height="32" fill="#FEF3C7"/>
+<text x="878" y="673" class="m s" font-size="14">broader</text>
+<text x="878" y="705" class="m s" font-size="14">narrower</text>
+<rect x="1220" y="470" width="260" height="156" rx="10" fill="#FFFFFF" stroke="#C2410C" stroke-width="2.4" stroke-dasharray="9 6"/>
+<path d="M1220,516 L1220,480 Q1220,470 1230,470 L1470,470 Q1480,470 1480,480 L1480,516 Z" fill="#C2410C"/>
+<text x="1350" y="500" font-size="17" class="b" fill="#FFFFFF">THÉSAURUS_EXTERNE</text>
+<rect x="1222" y="524" width="256" height="32" fill="#FDEBDD"/>
+<text x="1238" y="545" class="m s" font-size="14">id</text>
+<text x="1238" y="577" class="m s" font-size="14">titre</text>
+<rect x="1222" y="588" width="256" height="32" fill="#FDEBDD"/>
+<text x="1238" y="609" class="m s" font-size="14">référentiel</text>
+<text x="1350" y="648" font-size="13" fill="#475569">hors du périmètre TAC</text>
+<path d="M300,170 L430,170" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="327.0" y="133.0" width="76.1" height="24" rx="12.0" fill="#FFFFFF" stroke="#2F5596" stroke-width="1.8"/>
+<text x="365" y="149.3" font-size="12" class="b" fill="#2F5596">désigne</text>
+<text x="312" y="194" font-size="14" class="b s" fill="#334155">1..*</text>
+<text x="420" y="194" font-size="14" class="b" fill="#334155">1</text>
+<path d="M710,170 L860,170" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="728.4" y="133.0" width="113.3" height="24" rx="12.0" fill="#FFFFFF" stroke="#6D28D9" stroke-width="1.8"/>
+<text x="785" y="149.3" font-size="12" class="b" fill="#6D28D9">appartient à</text>
+<text x="722" y="194" font-size="14" class="b s" fill="#334155">1..*</text>
+<text x="850" y="194" font-size="14" class="b" fill="#334155">1</text>
+<path d="M570,266 L570,500" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="491.0" y="368.0" width="157.9" height="24" rx="12.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.8"/>
+<text x="570" y="384.3" font-size="12" class="b" fill="#0F766E">broader / narrower</text>
+<text x="584" y="290" font-size="14" class="b s" fill="#334155">0..*</text>
+<text x="584" y="490" font-size="14" class="b s" fill="#334155">0..*</text>
+<path d="M1010,300 L1010,470" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="975.7" y="373.0" width="68.6" height="24" rx="12.0" fill="#FFFFFF" stroke="#B45309" stroke-width="1.8"/>
+<text x="1010" y="389.3" font-size="12" class="b" fill="#B45309">génère</text>
+<text x="1024" y="324" font-size="14" class="b s" fill="#334155">1</text>
+<text x="1024" y="460" font-size="14" class="b s" fill="#334155">0..*</text>
+<path d="M1160,200 L1350,200 L1350,470" fill="none" stroke="#334155" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ah334155)"/>
+<rect x="1205.8" y="188.0" width="98.4" height="24" rx="12.0" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.8"/>
+<text x="1255" y="204.3" font-size="12" class="b" fill="#C2410C">alignement</text>
+<text x="1172" y="190" font-size="14" class="b s" fill="#334155">0..*</text>
+<text x="1364" y="460" font-size="14" class="b s" fill="#334155">0..*</text>
+<rect x="40" y="790" width="1430" height="90" rx="14" fill="#F8F9FB" stroke="#CBD5E1" stroke-width="1.8"/>
+<text x="68" y="842" font-size="17" class="b s">Légende</text>
+<rect x="200" y="822" width="40" height="26" rx="6" fill="#FFFFFF" stroke="#334155" stroke-width="2"/>
+<text x="254" y="841" font-size="15" class="s">entité du graphe TAC</text>
+<rect x="510" y="822" width="40" height="26" rx="6" fill="#FFFFFF" stroke="#0F766E" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="564" y="841" font-size="15" class="s">représentation répétée</text>
+<rect x="820" y="822" width="40" height="26" rx="6" fill="#FFFFFF" stroke="#C2410C" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="874" y="841" font-size="15" class="s">référentiel externe</text>
+<text x="1140" y="841" font-size="15" class="s" fill="#475569">1, 0..*, 1..* : cardinalités</text>
+</g></svg>
